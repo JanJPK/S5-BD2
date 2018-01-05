@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using Warlord.UI.Annotations;
+using Warlord.UI.Properties;
 
 namespace Warlord.UI.ViewModel
 {

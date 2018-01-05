@@ -43,6 +43,9 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="MahApps.Metro, Version=1.5.0.23, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
+      <HintPath>..\packages\MahApps.Metro.1.5.0\lib\net45\MahApps.Metro.dll</HintPath>
+    </Reference>
     <Reference Include="Prism, Version=6.3.0.0, Culture=neutral, PublicKeyToken=40ee6c3a2184dc59, processorArchitecture=MSIL">
       <HintPath>..\packages\Prism.Core.6.3.0\lib\net45\Prism.dll</HintPath>
     </Reference>
@@ -53,6 +56,9 @@
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\MahApps.Metro.1.5.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -71,10 +77,32 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Event\AfterCollectionSavedEvent.cs" />
+    <Compile Include="Event\AfterDetailClosedEvent.cs" />
+    <Compile Include="Event\AfterDetailDeletedEvent.cs" />
+    <Compile Include="Event\AfterDetailSavedEvent.cs" />
+    <Compile Include="Event\AfterDetailOpenedEvent.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Service\Lookups\IManufacturerLookupService.cs" />
+    <Compile Include="Service\Lookups\IOrderLookupService.cs" />
+    <Compile Include="Service\Lookups\IVehicleLookupService.cs" />
+    <Compile Include="Service\Lookups\LookupItem.cs" />
+    <Compile Include="Service\Lookups\LookupService.cs" />
+    <Compile Include="Service\Message\IMessageService.cs" />
+    <Compile Include="Service\Message\MessageService.cs" />
+    <Compile Include="Startup\Bootstrapper.cs" />
     <Compile Include="ViewModel\BaseVM.cs" />
     <Compile Include="ViewModel\Detail\BaseDetailVM.cs" />
+    <Compile Include="ViewModel\Detail\CustomerDetailVM.cs" />
     <Compile Include="ViewModel\Detail\IDetailVM.cs" />
+    <Compile Include="ViewModel\Detail\ManufacturerDetailVM.cs" />
+    <Compile Include="ViewModel\Detail\OrderDetailVM.cs" />
+    <Compile Include="ViewModel\Detail\VehicleDetailVM.cs" />
+    <Compile Include="ViewModel\Detail\VehicleModelDetailVM.cs" />
+    <Compile Include="ViewModel\MainVM.cs" />
+    <Compile Include="ViewModel\Navigation\INavigationVM.cs" />
+    <Compile Include="ViewModel\Navigation\NavigationItemVM.cs" />
+    <Compile Include="ViewModel\Navigation\NavigationVM.cs" />
     <Compile Include="Wrappers\BaseNotifyDataErrorInfo.cs" />
     <Compile Include="Wrappers\BaseWrapper.cs" />
     <Page Include="MainWindow.xaml">
@@ -85,8 +113,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Data\Repositories\BaseRepository.cs" />
-    <Compile Include="Data\Repositories\IBaseRepository.cs" />
+    <Compile Include="Service\Repositories\BaseRepository.cs" />
+    <Compile Include="Service\Repositories\IBaseRepository.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

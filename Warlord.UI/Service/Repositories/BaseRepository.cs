@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.Entity;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace Warlord.UI.Data.Repositories
+namespace Warlord.UI.Service.Repositories
 {
     /// <summary>
     ///     Base class for repositories managing communication with database.

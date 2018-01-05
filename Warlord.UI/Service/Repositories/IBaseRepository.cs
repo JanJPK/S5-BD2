@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Warlord.UI.Data.Repositories
+namespace Warlord.UI.Service.Repositories
 {
     public interface IBaseRepository<T>
     {

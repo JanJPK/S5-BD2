@@ -1,12 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Prism.Commands;
 using Prism.Events;
+using Warlord.UI.Event;
+using Warlord.UI.Service;
+using Warlord.UI.Service.Message;
 
 namespace Warlord.UI.ViewModel.Detail
 {
@@ -15,7 +16,7 @@ namespace Warlord.UI.ViewModel.Detail
         #region Fields
 
         protected readonly IEventAggregator EventAggregator;
-        protected readonly IMessageDialogService MessageDialogService;
+        protected readonly IMessageService MessageService;
 
         private bool hasChanges;
         private string title;
@@ -25,10 +26,10 @@ namespace Warlord.UI.ViewModel.Detail
         #region Constructors and Destructors
 
         protected BaseDetailVM(IEventAggregator eventAggregator,
-            IMessageDialogService messageDialogService)
+            IMessageService messageService)
         {
             EventAggregator = eventAggregator;
-            MessageDialogService = messageDialogService;
+            MessageService = messageService;
             SaveCommand = new DelegateCommand(OnSaveExecute, OnSaveCanExecute);
             DeleteCommand = new DelegateCommand(OnDeleteExecute);
             CloseDetailViewCommand = new DelegateCommand(OnCloseDetailViewExecute);
@@ -37,10 +38,6 @@ namespace Warlord.UI.ViewModel.Detail
         #endregion
 
         #region Public Properties
-
-        public ICommand CloseDetailViewCommand { get; }
-
-        public ICommand DeleteCommand { get; }
 
         public bool HasChanges
         {
@@ -51,14 +48,12 @@ namespace Warlord.UI.ViewModel.Detail
                 {
                     hasChanges = value;
                     OnPropertyChanged();
-                    ((DelegateCommand)SaveCommand).RaiseCanExecuteChanged();
+                    ((DelegateCommand) SaveCommand).RaiseCanExecuteChanged();
                 }
             }
         }
 
         public int Id { get; set; }
-
-        public ICommand SaveCommand { get; }
 
         public string Title
         {
@@ -84,9 +79,9 @@ namespace Warlord.UI.ViewModel.Detail
         {
             if (HasChanges)
             {
-                var result = await MessageDialogService.ShowOkCancelDialogAsync(
+                var result = await MessageService.ShowOkCancelDialogAsync(
                     "You've made changes. Close this item?", "Question");
-                if (result == MessageDialogResult.Cancel)
+                if (result == MessageResult.Cancel)
                 {
                     return;
                 }
@@ -103,6 +98,60 @@ namespace Warlord.UI.ViewModel.Detail
         protected abstract void OnDeleteExecute();
         protected abstract bool OnSaveCanExecute();
         protected abstract void OnSaveExecute();
+
+
+        protected async Task SaveWithOptimisticConcurrencyAsync(Func<Task> saveFunc, Action afterSaveAction)
+        {
+            try
+            {
+                await saveFunc();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                var databaseValues = ex.Entries.Single().GetDatabaseValues();
+                if (databaseValues == null)
+                {
+                    MessageService.ShowInfoDialogAsync("The entity has been deleted by another user.");
+                    RaiseDetailDeletedEvent(Id);
+                    return;
+                }
+
+                var result = await MessageService.ShowConfirmDialogAsync(
+                    "The entity has been changed in the meantime by someone else. "
+                    + "Click OK to save changes; click Cancel to reload entity from the database.",
+                    "Question");
+
+                if (result)
+                {
+                    // Update entity.
+                    var entry = ex.Entries.Single();
+                    entry.OriginalValues.SetValues(entry.GetDatabaseValues());
+                    await saveFunc();
+                }
+                else
+                {
+                    // Reload entity.
+                    await ex.Entries.Single().ReloadAsync();
+                    await LoadAsync(Id);
+                }
+            }
+
+            afterSaveAction();
+        }
+
+        #endregion
+
+        #region Commands
+
+        public ICommand CloseDetailViewCommand { get; }
+
+        public ICommand DeleteCommand { get; }
+
+        public ICommand SaveCommand { get; }
+
+        #endregion
+
+        #region Event Raising
 
         protected virtual void RaiseDetailDeletedEvent(int modelId)
         {
@@ -125,55 +174,15 @@ namespace Warlord.UI.ViewModel.Detail
                 });
         }
 
-        #endregion
-
         protected virtual void RaiseCollectionSavedEvent()
         {
             EventAggregator.GetEvent<AfterCollectionSavedEvent>()
                 .Publish(new AfterCollectionSavedEventArgs
                 {
-                    ViewModelName = this.GetType().Name
+                    ViewModelName = GetType().Name
                 });
         }
 
-        protected async Task SaveWithOptimisticConcurrencyAsync(Func<Task> saveFunc, Action afterSaveAction)
-        {
-            try
-            {
-                await saveFunc();
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                var databaseValues = ex.Entries.Single().GetDatabaseValues();
-                if (databaseValues == null)
-                {
-                    MessageDialogService.ShowInfoDialogAsync("The entity has been deleted by another user.");
-                    RaiseDetailDeletedEvent(Id);
-                    return;
-                }
-
-                var result = await MessageDialogService.ShowOkCancelDialogAsync(
-                    "The entity has been changed in the meantime by someone else. "
-                    + "Click OK to save changes; click Cancel to reload entity from the database.",
-                    "Question");
-
-                if (result == MessageDialogResult.OK)
-                {
-                    // Update entity.
-                    var entry = ex.Entries.Single();
-                    entry.OriginalValues.SetValues(entry.GetDatabaseValues());
-                    await saveFunc();
-                }
-                else
-                {
-                    // Reload entity.
-                    await ex.Entries.Single().ReloadAsync();
-                    await LoadAsync(Id);
-                }
-
-            }
-
-            afterSaveAction();
-        }
+        #endregion
     }
 }
