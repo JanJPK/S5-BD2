@@ -1,40 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 using Prism.Commands;
 using Prism.Events;
-using Warlord.UI.Event;
+using Warlord.Event;
 
-namespace Warlord.UI.ViewModel.Navigation
+namespace Warlord.ViewModel.Detail.Browse
 {
-    public class NavigationItemVM : BaseVM
+    public class BrowseItem : BaseVM
     {
         #region Fields
 
         private readonly IEventAggregator eventAggregator;
         private string displayMember;
-        private readonly string detailViewModelName;
 
         #endregion
 
         #region Constructors and Destructors
 
-        public NavigationItemVM(int id, string displayMember, IEventAggregator eventAggregator,
+        public BrowseItem(int id, string displayMember, IEventAggregator eventAggregator,
             string detailViewModelName)
         {
             Id = id;
             this.eventAggregator = eventAggregator;
             this.displayMember = displayMember;
-            this.detailViewModelName = detailViewModelName;
+            DetailViewModelName = detailViewModelName;
             OpenDetailViewCommand = new DelegateCommand(OnOpenDetailViewExecute);
         }
 
         #endregion
 
         #region Public Properties
+
+        public string DetailViewModelName { get; }
 
         public string DisplayMember
         {
@@ -60,10 +56,10 @@ namespace Warlord.UI.ViewModel.Navigation
                 new AfterDetailOpenedEventArgs
                 {
                     Id = Id,
-                    ViewModelName = detailViewModelName
+                    ViewModelName = DetailViewModelName
                 });
         }
-        
+
         #endregion
     }
 }

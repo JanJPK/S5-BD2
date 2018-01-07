@@ -99,7 +99,6 @@ namespace Warlord.UI.ViewModel.Detail
         protected abstract bool OnSaveCanExecute();
         protected abstract void OnSaveExecute();
 
-
         protected async Task SaveWithOptimisticConcurrencyAsync(Func<Task> saveFunc, Action afterSaveAction)
         {
             try

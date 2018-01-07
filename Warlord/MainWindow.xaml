@@ -1,0 +1,69 @@
+﻿<Window x:Class="Warlord.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Warlord"
+        mc:Ignorable="d"
+        xmlns:detail="clr-namespace:Warlord.ViewModel.Detail"
+        xmlns:browse="clr-namespace:Warlord.ViewModel.Detail.Browse"
+        xmlns:view="clr-namespace:Warlord.View"
+        Title="MainWindow" Height="350" Width="525">
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type detail:VehicleModelDetailVM}">
+            <view:VehicleModelDetailView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type browse:VehicleModelBrowseDetailVM}">
+            <view:VehicleModelBrowseView />
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Menu toolbar on top -->
+        <Menu Grid.Row="0" Grid.ColumnSpan="2">
+            <MenuItem Header="Create">
+                <MenuItem Header="New VehicleModel"
+                          Command="{Binding CreateNewDetailViewCommand}"
+                          CommandParameter="{x:Type detail:VehicleModelDetailVM}" />
+            </MenuItem>
+
+            <MenuItem Header="Browse">
+                <MenuItem Header="Vehicle models"
+                          Command="{Binding OpenSingleDetailViewCommand}"
+                          CommandParameter="{x:Type browse:VehicleModelBrowseDetailVM}" />
+            </MenuItem>
+        </Menu>
+
+        <!-- Navigation tab control -->
+        
+
+        <!-- Detail tab control -->
+        <TabControl Grid.Row="1" Grid.Column="1"
+                    ItemsSource="{Binding DetailVMs}"
+                    SelectedItem="{Binding SelectedVM, Mode=TwoWay}">
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Title}" />
+
+                        <Button Content="X"
+                                Command="{Binding CloseDetailViewCommand}"
+                                VerticalContentAlignment="Top"
+                                Margin="2 0 2 2" />
+                    </StackPanel>
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+        </TabControl>
+
+    </Grid>
+</Window>

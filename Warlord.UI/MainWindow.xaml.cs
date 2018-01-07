@@ -24,7 +24,7 @@ namespace Warlord.UI
             InitializeComponent();
             this.viewModel = viewModel;
             DataContext = this.viewModel;
-            Loaded += MainWindow_Loaded;
+            //Loaded += MainWindow_Loaded;
         }
 
         #endregion
@@ -33,7 +33,7 @@ namespace Warlord.UI
 
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            await viewModel.LoadAsync();
+            //await viewModel.LoadAsync();
         }
 
         #endregion

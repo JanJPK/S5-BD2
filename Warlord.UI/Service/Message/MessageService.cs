@@ -1,6 +1,4 @@
 ﻿using System.Threading.Tasks;
-using MahApps.Metro.Controls;
-using MahApps.Metro.Controls.Dialogs;
 
 namespace Warlord.UI.Service.Message
 {
@@ -11,17 +9,18 @@ namespace Warlord.UI.Service.Message
     {
         #region Public Methods and Operators
 
-        private MetroWindow MetroWindow => (MetroWindow)App.Current.MainWindow;
+        //private MetroWindow MetroWindow => (MetroWindow)App.Current.MainWindow;
 
         public async void ShowInfoDialogAsync(string text, string title = "Information")
         {
-            await MetroWindow.ShowMessageAsync(title, text);
+            //await MetroWindow.ShowMessageAsync(title, text);
         }
 
         public async Task<MessageResult> ShowOkCancelDialogAsync(string text, string title)
         {
-            var result = await MetroWindow.ShowMessageAsync(title, text, MessageDialogStyle.AffirmativeAndNegative);
-            return result == MahApps.Metro.Controls.Dialogs.MessageDialogResult.Affirmative ? MessageResult.OK : MessageResult.Cancel;
+            //var result = await MetroWindow.ShowMessageAsync(title, text, MessageDialogStyle.AffirmativeAndNegative);
+            //return result == MahApps.Metro.Controls.Dialogs.MessageDialogResult.Affirmative ? MessageResult.OK : MessageResult.Cancel;
+            return MessageResult.OK;
         }
 
         /// <summary>
@@ -32,8 +31,9 @@ namespace Warlord.UI.Service.Message
         /// <returns>True when user confirms; false when cancels.</returns>
         public async Task<bool> ShowConfirmDialogAsync(string text, string title)
         {
-            var result = await MetroWindow.ShowMessageAsync(title, text, MessageDialogStyle.AffirmativeAndNegative);
-            return result == MahApps.Metro.Controls.Dialogs.MessageDialogResult.Affirmative;
+            //var result = await MetroWindow.ShowMessageAsync(title, text, MessageDialogStyle.AffirmativeAndNegative);
+            //return result == MahApps.Metro.Controls.Dialogs.MessageDialogResult.Affirmative;
+            return true;
         }
 
         #endregion
