@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Prism.Events;
 using Warlord.Event;
@@ -9,23 +11,13 @@ using Warlord.Service.Message;
 
 namespace Warlord.ViewModel.Detail.Browse
 {
-    public class VehicleModelBrowseDetailVM : BaseDetailVM
+    public abstract class BaseBrowseVM : BaseDetailVM
     {
-        #region Fields
-
-        private readonly IVehicleModelLookupService lookupService;
-
-        #endregion
-
         #region Constructors and Destructors
 
-        public VehicleModelBrowseDetailVM(IEventAggregator eventAggregator, IMessageService messageService,
-            IVehicleModelLookupService lookupService)
+        protected BaseBrowseVM(IEventAggregator eventAggregator, IMessageService messageService)
             : base(eventAggregator, messageService)
         {
-            Title = "Vehicle Models";
-            this.lookupService = lookupService;
-
             BrowseItems = new ObservableCollection<BrowseItem>();
 
             EventAggregator.GetEvent<AfterDetailSavedEvent>().Subscribe(AfterDetailSaved);
@@ -42,32 +34,15 @@ namespace Warlord.ViewModel.Detail.Browse
 
         #region Public Methods and Operators
 
-        public override async Task LoadAsync(int id)
-        {
-            Id = id;
-            BrowseItems.Clear();
-
-            var lookupItems = await lookupService.GetVehicleModelLookupAsync();
-            foreach (var item in lookupItems)
-            {
-                BrowseItems.Add(new BrowseItem(
-                    item.Id,
-                    item.DisplayMember,
-                    EventAggregator,
-                    nameof(VehicleModelDetailVM)
-                ));
-            }
-        }
+        public abstract override Task LoadAsync(int id);
 
         #endregion
 
         #region Event Subscriptions
 
-        private void AfterDetailDeleted(AfterDetailDeletedEventArgs args)
-        {
-        }
+        protected abstract void AfterDetailDeleted(AfterDetailDeletedEventArgs args);
 
-        private void AfterDetailDeleted(ObservableCollection<BrowseItem> items,
+        protected void AfterDetailDeleted(ObservableCollection<BrowseItem> items,
             AfterDetailDeletedEventArgs args)
         {
             var item = items.SingleOrDefault(f => f.Id == args.Id);
@@ -77,11 +52,9 @@ namespace Warlord.ViewModel.Detail.Browse
             }
         }
 
-        private void AfterDetailSaved(AfterDetailSavedEventArgs args)
-        {
-        }
+        protected abstract void AfterDetailSaved(AfterDetailSavedEventArgs args);
 
-        private void AfterDetailSaved(ObservableCollection<BrowseItem> items,
+        protected void AfterDetailSaved(ObservableCollection<BrowseItem> items,
             AfterDetailSavedEventArgs args)
         {
             var lookupItem = items.SingleOrDefault(l => l.Id == args.Id);
@@ -97,7 +70,6 @@ namespace Warlord.ViewModel.Detail.Browse
         }
 
         #endregion
-
 
         #region Unused
 

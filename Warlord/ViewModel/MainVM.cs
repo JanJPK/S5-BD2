@@ -35,20 +35,22 @@ namespace Warlord.ViewModel
             DetailVMs = new ObservableCollection<IDetailVM>();
 
             this.eventAggregator = eventAggregator;
+            this.eventAggregator.GetEvent<AfterNewVehicleDetailOpenedEvent>().Subscribe(AfterNewVehicleDetailOpened);
             this.eventAggregator.GetEvent<AfterDetailOpenedEvent>().Subscribe(AfterDetailOpened);
             this.eventAggregator.GetEvent<AfterDetailDeletedEvent>().Subscribe(AfterDetailDeleted);
             this.eventAggregator.GetEvent<AfterDetailClosedEvent>().Subscribe(AfterDetailClosed);
 
-            CreateNewDetailCommand = new DelegateCommand<Type>(OnCreateNewDetailExecute);
+            CreateNewDetailViewCommand = new DelegateCommand<Type>(OnCreateNewDetailExecute);
             OpenSingleDetailViewCommand = new DelegateCommand<Type>(OnOpenSingleDetailViewExecute);
 
             CreateVehicleModelBrowseView = new DelegateCommand<Type>(OnCreateNewVehicleModelBrowseView);
         }
 
-        private void OnCreateNewVehicleModelBrowseView(Type obj)
-        {
-            
-        }
+        #endregion
+
+        #region Public Properties
+
+        public ICommand CreateVehicleModelBrowseView { get; }
 
         #endregion
 
@@ -57,6 +59,14 @@ namespace Warlord.ViewModel
         public Task LoadAsync()
         {
             return null;
+        }
+
+        #endregion
+
+        #region Methods
+
+        private void OnCreateNewVehicleModelBrowseView(Type obj)
+        {
         }
 
         #endregion
@@ -75,7 +85,7 @@ namespace Warlord.ViewModel
 
         #region Properties
 
-        public ICommand CreateNewDetailCommand { get; }
+        public ICommand CreateNewDetailViewCommand { get; }
 
         public ObservableCollection<IDetailVM> DetailVMs { get; }
 
@@ -144,7 +154,7 @@ namespace Warlord.ViewModel
         {
             var detailViewModel = DetailVMs
                 .SingleOrDefault(vm => vm.Id == args.Id
-                && vm.GetType().Name == args.ViewModelName);
+                                       && vm.GetType().Name == args.ViewModelName);
 
             if (detailViewModel == null)
             {
@@ -156,7 +166,7 @@ namespace Warlord.ViewModel
                 }
                 catch
                 {
-                    messageService.ShowInfoDialogAsync("Could not load the entity.");
+                    messageService.ShowInfoDialog("Could not load the entity.");
                     //await SelectedNavigationVM.LoadAsync();
                     return;
                 }
@@ -167,10 +177,28 @@ namespace Warlord.ViewModel
             SelectedDetailVM = detailViewModel;
         }
 
-        #endregion
+        private async void AfterNewVehicleDetailOpened(AfterNewVehicleDetailOpenedEventArgs args)
+        {
+            args.Id = nextNewItemId--;
+            var detailViewModel = DetailVMs
+                .SingleOrDefault(vm => vm.Id == args.Id
+                                       && vm.GetType().Name == args.ViewModelName);
+
+            if (detailViewModel == null)
+            {
+                detailViewModel = detailVMCreator[args.ViewModelName];
+
+                ((VehicleDetailVM) detailViewModel).VehicleModelId = args.VehicleModelId;
+                await detailViewModel.LoadAsync(args.Id);
+
+                DetailVMs.Add(detailViewModel);
+            }
+
+            SelectedDetailVM = detailViewModel;
+        }
 
         #endregion
 
-        public ICommand CreateVehicleModelBrowseView { get; }
+        #endregion
     }
 }

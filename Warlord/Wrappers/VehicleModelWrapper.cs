@@ -53,6 +53,18 @@ namespace Warlord.Wrappers
             set => SetValue(value);
         }
 
+        public int? ManufacturerId
+        {
+            get => GetValue<int>();
+            set => SetValue(value);
+        }
+
+        public string ManufacturerShortName
+        {
+            get => GetValue<string>();
+            set => SetValue(value);
+        }
+
         public Manufacturer Manufacturer
         {
             get => GetValue<Manufacturer>();

@@ -16,19 +16,32 @@ namespace Warlord.Startup
         {
             var builder = new ContainerBuilder();
 
+            // Event handling.
             builder.RegisterType<EventAggregator>().As<IEventAggregator>().SingleInstance();
 
+            // Database context.
             builder.RegisterType<WarlordDbContext>().AsSelf();
-            builder.RegisterType<MainWindow>().AsSelf();
+            
+            // Main window.
             builder.RegisterType<MainVM>().AsSelf();
+            builder.RegisterType<MainWindow>().AsSelf();            
 
+            // Services.
+            builder.RegisterType<ManufacturerRepository>().As<IManufacturerRepository>();
             builder.RegisterType<VehicleModelRepository>().As<IVehicleModelRepository>();
-            builder.RegisterType<LookupService>().As<IVehicleModelLookupService>();
-
-            builder.RegisterType<VehicleModelDetailVM>().Keyed<IDetailVM>(nameof(VehicleModelDetailVM));
-            builder.RegisterType<VehicleModelBrowseDetailVM>().Keyed<IDetailVM>(nameof(VehicleModelBrowseDetailVM));
-
+            builder.RegisterType<VehicleRepository>().As<IVehicleRepository>();
+            builder.RegisterType<OrderRepository>().As <IOrderRepository>();
+            builder.RegisterType<CustomerRepository>().As<ICustomerRepository>();
+            builder.RegisterType<LookupService>().AsImplementedInterfaces();
             builder.RegisterType<MessageService>().As<IMessageService>();
+
+            // View models.
+            builder.RegisterType<ManufacturerDetailVM>().Keyed<IDetailVM>(nameof(ManufacturerDetailVM));
+            builder.RegisterType<ManufacturerBrowseVM>().Keyed<IDetailVM>(nameof(ManufacturerBrowseVM));
+            builder.RegisterType<VehicleModelDetailVM>().Keyed<IDetailVM>(nameof(VehicleModelDetailVM));
+            builder.RegisterType<VehicleModelBrowseVM>().Keyed<IDetailVM>(nameof(VehicleModelBrowseVM));
+            builder.RegisterType<VehicleDetailVM>().Keyed<IDetailVM>(nameof(VehicleDetailVM));
+            //builder.RegisterType<VehicleBrowseVM>().Keyed<IDetailVM>(nameof(VehicleBrowseVM));
 
             return builder.Build();
         }

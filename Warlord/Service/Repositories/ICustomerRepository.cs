@@ -3,13 +3,11 @@ using Warlord.Model;
 
 namespace Warlord.Service.Repositories
 {
-    public interface IVehicleModelRepository : IBaseRepository<VehicleModel>
+    public interface ICustomerRepository : IBaseRepository<Customer>
     {
         #region Public Methods and Operators
 
-        Task<bool> HasVehiclesAsync(int id);
-
-        VehicleModel GetById(int id);
+        Task<bool> HasOrdersAsync(int id);
 
         #endregion
     }

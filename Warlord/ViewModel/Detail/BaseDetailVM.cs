@@ -78,9 +78,9 @@ namespace Warlord.ViewModel.Detail
         {
             if (HasChanges)
             {
-                var result = await MessageService.ShowOkCancelDialogAsync(
+                var result = MessageService.ShowConfirmDialog(
                     "You've made changes. Close this item?", "Question");
-                if (result == MessageResult.Cancel)
+                if (result)
                 {
                     return;
                 }
@@ -98,7 +98,8 @@ namespace Warlord.ViewModel.Detail
         protected abstract bool OnSaveCanExecute();
         protected abstract void OnSaveExecute();
 
-        protected async Task SaveWithOptimisticConcurrencyAsync(Func<Task> saveFunc, Action afterSaveAction)
+        //protected async Task SaveWithOptimisticConcurrencyAsync(Func<Task> saveFunc, Action afterSaveAction)
+        protected async Task SaveWithOptimisticConcurrencyAsync(Func<Task> saveFunc)
         {
             try
             {
@@ -109,15 +110,14 @@ namespace Warlord.ViewModel.Detail
                 var databaseValues = ex.Entries.Single().GetDatabaseValues();
                 if (databaseValues == null)
                 {
-                    MessageService.ShowInfoDialogAsync("The entity has been deleted by another user.");
+                    MessageService.ShowInfoDialog("The entity has been deleted by another user.");
                     RaiseDetailDeletedEvent(Id);
                     return;
                 }
 
-                var result = await MessageService.ShowConfirmDialogAsync(
+                var result = MessageService.ShowConfirmDialog(
                     "The entity has been changed in the meantime by someone else. "
-                    + "Click OK to save changes; click Cancel to reload entity from the database.",
-                    "Question");
+                    + "Click OK to save changes; click Cancel to reload entity from the database.");
 
                 if (result)
                 {
@@ -134,7 +134,7 @@ namespace Warlord.ViewModel.Detail
                 }
             }
 
-            afterSaveAction();
+            //afterSaveAction();
         }
 
         #endregion

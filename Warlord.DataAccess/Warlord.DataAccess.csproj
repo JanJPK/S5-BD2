@@ -59,6 +59,22 @@
     <Compile Include="Migrations\201801032211063_AddedRowVersions.Designer.cs">
       <DependentUpon>201801032211063_AddedRowVersions.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201801072049180_UpdatedCustomer.cs" />
+    <Compile Include="Migrations\201801072049180_UpdatedCustomer.Designer.cs">
+      <DependentUpon>201801072049180_UpdatedCustomer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201801081708116_AddedOrderIdToVehicle.cs" />
+    <Compile Include="Migrations\201801081708116_AddedOrderIdToVehicle.Designer.cs">
+      <DependentUpon>201801081708116_AddedOrderIdToVehicle.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201801082154186_VehicleChangedPriceToInt.cs" />
+    <Compile Include="Migrations\201801082154186_VehicleChangedPriceToInt.Designer.cs">
+      <DependentUpon>201801082154186_VehicleChangedPriceToInt.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201801082201248_VehicleIncreasedColorStringLength.cs" />
+    <Compile Include="Migrations\201801082201248_VehicleIncreasedColorStringLength.Designer.cs">
+      <DependentUpon>201801082201248_VehicleIncreasedColorStringLength.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WarlordDbContext.cs" />
@@ -82,6 +98,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201801032211063_AddedRowVersions.resx">
       <DependentUpon>201801032211063_AddedRowVersions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801072049180_UpdatedCustomer.resx">
+      <DependentUpon>201801072049180_UpdatedCustomer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801081708116_AddedOrderIdToVehicle.resx">
+      <DependentUpon>201801081708116_AddedOrderIdToVehicle.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801082154186_VehicleChangedPriceToInt.resx">
+      <DependentUpon>201801082154186_VehicleChangedPriceToInt.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801082201248_VehicleIncreasedColorStringLength.resx">
+      <DependentUpon>201801082201248_VehicleIncreasedColorStringLength.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

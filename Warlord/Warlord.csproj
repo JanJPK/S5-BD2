@@ -53,6 +53,7 @@
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -65,30 +66,82 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="Xceed.Wpf.AvalonDock, Version=3.2.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.3.2.0\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Aero, Version=3.2.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.3.2.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.Aero.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Metro, Version=3.2.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.3.2.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.Metro.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.VS2010, Version=3.2.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.3.2.0\lib\net40\Xceed.Wpf.AvalonDock.Themes.VS2010.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.DataGrid, Version=3.2.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.3.2.0\lib\net40\Xceed.Wpf.DataGrid.dll</HintPath>
+    </Reference>
+    <Reference Include="Xceed.Wpf.Toolkit, Version=3.2.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Extended.Wpf.Toolkit.3.2.0\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Event\AfterNewVehicleDetailOpenedEvent.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Service\Lookups\ICustomerLookupService.cs" />
+    <Compile Include="Service\Lookups\IManufacturerLookupService.cs" />
+    <Compile Include="Service\Lookups\IOrderLookupService.cs" />
+    <Compile Include="Service\Lookups\IVehicleLookupService.cs" />
     <Compile Include="Service\Lookups\IVehicleModelLookupService.cs" />
     <Compile Include="Service\Lookups\LookupItem.cs" />
     <Compile Include="Service\Lookups\LookupService.cs" />
     <Compile Include="Service\Message\IMessageService.cs" />
     <Compile Include="Service\Message\MessageService.cs" />
     <Compile Include="Service\Repositories\BaseRepository.cs" />
+    <Compile Include="Service\Repositories\CustomerRepository.cs" />
     <Compile Include="Service\Repositories\IBaseRepository.cs" />
+    <Compile Include="Service\Repositories\ICustomerRepository.cs" />
+    <Compile Include="Service\Repositories\IManufacturerRepository.cs" />
+    <Compile Include="Service\Repositories\IOrderRepository.cs" />
     <Compile Include="Service\Repositories\IVehicleModelRepository.cs" />
+    <Compile Include="Service\Repositories\IVehicleRepository.cs" />
+    <Compile Include="Service\Repositories\ManufacturerRepository.cs" />
+    <Compile Include="Service\Repositories\OrderRepository.cs" />
     <Compile Include="Service\Repositories\VehicleModelRepository.cs" />
+    <Compile Include="Service\Repositories\VehicleRepository.cs" />
     <Compile Include="Startup\Bootstrapper.cs" />
     <Compile Include="ViewModel\BaseVM.cs" />
     <Compile Include="ViewModel\Detail\BaseDetailVM.cs" />
+    <Compile Include="ViewModel\Detail\Browse\BaseBrowseVM.cs" />
     <Compile Include="ViewModel\Detail\Browse\BrowseItem.cs" />
-    <Compile Include="ViewModel\Detail\Browse\VehicleModelBrowseDetailVM.cs" />
+    <Compile Include="ViewModel\Detail\Browse\CustomerBrowseVM.cs" />
+    <Compile Include="ViewModel\Detail\Browse\ManufacturerBrowseVM.cs" />
+    <Compile Include="ViewModel\Detail\Browse\OrderBrowseVM.cs" />
+    <Compile Include="ViewModel\Detail\CustomerDetailVM.cs" />
+    <Compile Include="ViewModel\Detail\ManufacturerDetailVM.cs" />
+    <Compile Include="ViewModel\Detail\OrderDetailVM.cs" />
+    <Compile Include="ViewModel\Detail\Browse\VehicleBrowseVM.cs" />
+    <Compile Include="ViewModel\Detail\Browse\VehicleModelBrowseVM.cs" />
     <Compile Include="ViewModel\Detail\IDetailVM.cs" />
+    <Compile Include="ViewModel\Detail\VehicleDetailVM.cs" />
     <Compile Include="ViewModel\Detail\VehicleModelDetailVM.cs" />
     <Compile Include="ViewModel\MainVM.cs" />
+    <Compile Include="View\ManufacturerBrowseView.xaml.cs">
+      <DependentUpon>ManufacturerBrowseView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\ManufacturerDetailView.xaml.cs">
+      <DependentUpon>ManufacturerDetailView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\VehicleBrowseView.xaml.cs">
+      <DependentUpon>VehicleBrowseView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\VehicleDetailView.xaml.cs">
+      <DependentUpon>VehicleDetailView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\VehicleModelBrowseView.xaml.cs">
       <DependentUpon>VehicleModelBrowseView.xaml</DependentUpon>
     </Compile>
@@ -97,7 +150,11 @@
     </Compile>
     <Compile Include="Wrappers\BaseNotifyDataErrorInfo.cs" />
     <Compile Include="Wrappers\BaseWrapper.cs" />
+    <Compile Include="Wrappers\CustomerWrapper.cs" />
+    <Compile Include="Wrappers\ManufacturerWrapper.cs" />
+    <Compile Include="Wrappers\OrderWrapper.cs" />
     <Compile Include="Wrappers\VehicleModelWrapper.cs" />
+    <Compile Include="Wrappers\VehicleWrapper.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -116,6 +173,22 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="View\ManufacturerBrowseView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\ManufacturerDetailView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\VehicleBrowseView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\VehicleDetailView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\VehicleModelBrowseView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="400" d:DesignWidth="400">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -15,8 +15,9 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="50"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         
         <Grid.ColumnDefinitions>
@@ -24,61 +25,67 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="100"/>
         </Grid.ColumnDefinitions>
-        
+
         <Label Grid.Row="0" Grid.Column="0"
-               Content="Name"/>
+               Content="Id"/>
         <TextBox Grid.Row="0" Grid.Column="1"
+                 Text="{Binding VehicleModel.Id, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                 Margin="10 0 10 10"/>
+        
+        <Label Grid.Row="1" Grid.Column="0"
+               Content="Name"/>
+        <TextBox Grid.Row="1" Grid.Column="1"
                  Text="{Binding VehicleModel.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  Margin="10 0 10 10"/>
 
-        <Label Grid.Row="1" Grid.Column="0"
-               Content="Manufacturer"/>
-        <TextBox Grid.Row="1" Grid.Column="1"
-                 Text="{Binding VehicleModel.Manufacturer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                 Margin="10 0 10 10"/>
-
         <Label Grid.Row="2" Grid.Column="0"
+               Content="Manufacturer"/>
+        <ComboBox Grid.Row="2" Grid.Column="1"
+                  ItemsSource="{Binding Manufacturers}"
+                  DisplayMemberPath="DisplayMember"
+                  SelectedValuePath="Id"
+                  SelectedValue="{Binding VehicleModel.ManufacturerId, Mode=TwoWay}"
+                  Margin="10 0 10 10"/>
+
+
+        <Label Grid.Row="3" Grid.Column="0"
                Content="Main armament"/>
-        <TextBox Grid.Row="2" Grid.Column="1"
+        <TextBox Grid.Row="3" Grid.Column="1"
                  Text="{Binding VehicleModel.MainArmament, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  Margin="10 0 10 10"/>
 
-        <Label Grid.Row="3" Grid.Column="0"
+        <Label Grid.Row="4" Grid.Column="0"
                Content="Secondary armament"/>
-        <TextBox Grid.Row="3" Grid.Column="1"
+        <TextBox Grid.Row="4" Grid.Column="1"
                  Text="{Binding VehicleModel.SecondaryArmament, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  Margin="10 0 10 10"/>
 
-        <Label Grid.Row="4" Grid.Column="0"
+        <Label Grid.Row="5" Grid.Column="0"
                Content="Crew"/>
-        <TextBox Grid.Row="4" Grid.Column="1"
+        <TextBox Grid.Row="5" Grid.Column="1"
                  Text="{Binding VehicleModel.Crew, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  Margin="10 0 10 10"/>
 
-        <Label Grid.Row="5" Grid.Column="0"
+        <Label Grid.Row="6" Grid.Column="0"
                Content="Engine"/>
-        <TextBox Grid.Row="5" Grid.Column="1"
+        <TextBox Grid.Row="6" Grid.Column="1"
                  Text="{Binding VehicleModel.Engine, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  Margin="10 0 10 10"/>
 
-        <Label Grid.Row="6" Grid.Column="0"
+        <Label Grid.Row="7" Grid.Column="0"
                Content="Engine power"/>
-        <TextBox Grid.Row="6" Grid.Column="1"
+        <TextBox Grid.Row="7" Grid.Column="1"
                  Text="{Binding VehicleModel.EnginePower, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  Margin="10 0 10 10"/>
 
-        <Label Grid.Row="7" Grid.Column="0"
-               Content="Id"/>
-        <TextBox Grid.Row="7" Grid.Column="1"
-                 Text="{Binding VehicleModel.Id, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                 Margin="10 0 10 10"/>
-        
         <StackPanel Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="3"
                     Orientation="Horizontal">
             <Button Content="Save" Width="125" Margin="10"
                     Command="{Binding SaveCommand}"/>
             <Button Content="Delete" Width="125" Margin="10"
                     Command="{Binding DeleteCommand}"/>
+            <Button Content="New vehicle" Width="125" Margin="10"
+                    Command="{Binding CreateNewVehicleCommand}"/>
         </StackPanel>
 
     </Grid>

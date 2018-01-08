@@ -8,14 +8,30 @@
         xmlns:detail="clr-namespace:Warlord.ViewModel.Detail"
         xmlns:browse="clr-namespace:Warlord.ViewModel.Detail.Browse"
         xmlns:view="clr-namespace:Warlord.View"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="600" Width="800">
     <Window.Resources>
+
+        <DataTemplate DataType="{x:Type detail:ManufacturerDetailVM}">
+            <view:ManufacturerDetailView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type browse:ManufacturerBrowseVM}">
+            <view:ManufacturerBrowseView />
+        </DataTemplate>
+
         <DataTemplate DataType="{x:Type detail:VehicleModelDetailVM}">
             <view:VehicleModelDetailView />
         </DataTemplate>
-        <DataTemplate DataType="{x:Type browse:VehicleModelBrowseDetailVM}">
+        <DataTemplate DataType="{x:Type browse:VehicleModelBrowseVM}">
             <view:VehicleModelBrowseView />
         </DataTemplate>
+
+        <DataTemplate DataType="{x:Type detail:VehicleDetailVM}">
+            <view:VehicleDetailView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type browse:VehicleBrowseVM}">
+            <view:VehicleBrowseView />
+        </DataTemplate>
+        
     </Window.Resources>
 
     <Grid>
@@ -32,25 +48,28 @@
         <!-- Menu toolbar on top -->
         <Menu Grid.Row="0" Grid.ColumnSpan="2">
             <MenuItem Header="Create">
-                <MenuItem Header="New VehicleModel"
+                <MenuItem Header="New vehicle model"
                           Command="{Binding CreateNewDetailViewCommand}"
                           CommandParameter="{x:Type detail:VehicleModelDetailVM}" />
+                <MenuItem Header="New manufacturer"
+                          Command="{Binding CreateNewDetailViewCommand}"
+                          CommandParameter="{x:Type detail:ManufacturerDetailVM}" />
             </MenuItem>
 
             <MenuItem Header="Browse">
                 <MenuItem Header="Vehicle models"
                           Command="{Binding OpenSingleDetailViewCommand}"
-                          CommandParameter="{x:Type browse:VehicleModelBrowseDetailVM}" />
+                          CommandParameter="{x:Type browse:VehicleModelBrowseVM}" />
+                <MenuItem Header="Manufacturers"
+                          Command="{Binding OpenSingleDetailViewCommand}"
+                          CommandParameter="{x:Type browse:ManufacturerBrowseVM}" />
             </MenuItem>
         </Menu>
 
-        <!-- Navigation tab control -->
-        
-
         <!-- Detail tab control -->
-        <TabControl Grid.Row="1" Grid.Column="1"
+        <TabControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
                     ItemsSource="{Binding DetailVMs}"
-                    SelectedItem="{Binding SelectedVM, Mode=TwoWay}">
+                    SelectedItem="{Binding SelectedDetailVM, Mode=TwoWay}">
             <TabControl.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
@@ -64,6 +83,5 @@
                 </DataTemplate>
             </TabControl.ItemTemplate>
         </TabControl>
-
     </Grid>
 </Window>

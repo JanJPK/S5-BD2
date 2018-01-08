@@ -1,9 +1,11 @@
-﻿using System;
+﻿using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Prism.Commands;
 using Prism.Events;
 using Warlord.Event;
 using Warlord.Model;
+using Warlord.Service.Lookups;
 using Warlord.Service.Message;
 using Warlord.Service.Repositories;
 using Warlord.Wrappers;
@@ -14,6 +16,8 @@ namespace Warlord.ViewModel.Detail
     {
         #region Fields
 
+        private readonly IManufacturerLookupService manufacturerLookupService;
+
         private readonly IVehicleModelRepository vehicleModelRepository;
 
         private VehicleModelWrapper vehicleModel;
@@ -23,15 +27,24 @@ namespace Warlord.ViewModel.Detail
         #region Constructors and Destructors
 
         public VehicleModelDetailVM(IEventAggregator eventAggregator, IMessageService messageService,
-            IVehicleModelRepository vehicleModelRepository)
+            IVehicleModelRepository vehicleModelRepository, IManufacturerLookupService manufacturerLookupService)
             : base(eventAggregator, messageService)
         {
             this.vehicleModelRepository = vehicleModelRepository;
+            this.manufacturerLookupService = manufacturerLookupService;
+
+            eventAggregator.GetEvent<AfterCollectionSavedEvent>().Subscribe(AfterCollectionSaved);
+
+            CreateNewVehicleCommand = new DelegateCommand(OnCreateNewVehicleExecute, OnCreateNewVehicleCanExecute);
+
+            Manufacturers = new ObservableCollection<LookupItem>();
         }
 
         #endregion
 
         #region Public Properties
+
+        public ObservableCollection<LookupItem> Manufacturers { get; }
 
         public VehicleModelWrapper VehicleModel
         {
@@ -42,6 +55,8 @@ namespace Warlord.ViewModel.Detail
                 OnPropertyChanged();
             }
         }
+
+        public ICommand CreateNewVehicleCommand { get; }
 
         #endregion
 
@@ -54,6 +69,7 @@ namespace Warlord.ViewModel.Detail
                 : CreateNewVehicleModel();
 
             Id = id;
+            await LoadManufacturersAsync();
 
             InitializeVehicleModel(vehicleModel);
         }
@@ -62,38 +78,11 @@ namespace Warlord.ViewModel.Detail
 
         #region Methods
 
-        protected override async void OnDeleteExecute()
+        private void AfterSaveAction()
         {
-            if (await vehicleModelRepository.HasVehiclesAsync(VehicleModel.Id))
-            {
-                // TODO: message.
-            }
-
-            // TODO: rest of method.
-        }
-
-        protected override bool OnSaveCanExecute()
-        {
-            return VehicleModel != null
-                   && !VehicleModel.HasErrors
-                   && HasChanges;
-        }
-
-        protected override async void OnSaveExecute()
-        {
-            await SaveWithOptimisticConcurrencyAsync(
-                vehicleModelRepository.SaveAsync,
-                () =>
-                {
-                    HasChanges = vehicleModelRepository.HasChanges();
-                    Id = vehicleModel.Id;
-                    RaiseDetailSavedEvent(VehicleModel.Id, vehicleModel.Name);
-                });
-        }
-
-        private void AfterCollectionSaved(AfterCollectionSavedEventArgs obj)
-        {
-            throw new NotImplementedException();
+            HasChanges = vehicleModelRepository.HasChanges();
+            Id = vehicleModel.Id;
+            RaiseDetailSavedEvent(VehicleModel.Id, Title);
         }
 
         private VehicleModel CreateNewVehicleModel()
@@ -126,15 +115,91 @@ namespace Warlord.ViewModel.Detail
 
             if (VehicleModel.Id == 0)
             {
-                VehicleModel.Name = "";
+                VehicleModel.Name = "New vehicle model";
+                VehicleModel.Engine = "";
+                VehicleModel.MainArmament = "";
             }
 
             SetTitle();
         }
 
+        private async Task LoadManufacturersAsync()
+        {
+            Manufacturers.Clear();
+            Manufacturers.Add(new NullLookupItem {DisplayMember = " - "});
+
+            var lookup = await manufacturerLookupService.GetManufacturerLookupAsync();
+            foreach (var lookupItem in lookup)
+            {
+                Manufacturers.Add(lookupItem);
+            }
+        }
+
         private void SetTitle()
         {
-            Title = $"{vehicleModel.Manufacturer.ShortName} - {vehicleModel.Name}";
+            Title = VehicleModel.ManufacturerId > 0
+                ? $"{Manufacturers[(int) VehicleModel.ManufacturerId].DisplayMember} {VehicleModel.Name}"
+                : $"{VehicleModel.Name}";
+        }
+
+        #endregion
+
+        #region Events
+
+        protected override async void OnDeleteExecute()
+        {
+            if (await vehicleModelRepository.HasVehiclesAsync(VehicleModel.Id))
+            {
+                MessageService.ShowInfoDialog(
+                    $"Models of {VehicleModel.Name} are currently up for sale and therefore this entity cannot be deleted.");
+                return;
+            }
+
+            bool result = MessageService.ShowConfirmDialog($"Do you wish to delete the model {VehicleModel.Name}?");
+            if (result)
+            {
+                vehicleModelRepository.Remove(VehicleModel.Model);
+                await vehicleModelRepository.SaveAsync();
+                RaiseDetailDeletedEvent(VehicleModel.Id);
+            }
+        }
+
+        protected override bool OnSaveCanExecute()
+        {
+            return VehicleModel != null
+                   && !VehicleModel.HasErrors
+                   && HasChanges;
+        }
+
+        protected override async void OnSaveExecute()
+        {
+            await SaveWithOptimisticConcurrencyAsync(vehicleModelRepository.SaveAsync);
+            SetTitle();
+            AfterSaveAction();
+        }
+
+        private async void AfterCollectionSaved(AfterCollectionSavedEventArgs args)
+        {
+            if (args.ViewModelName == nameof(ManufacturerDetailVM))
+            {
+                await LoadManufacturersAsync();
+            }
+            SetTitle();
+        }
+
+        private void OnCreateNewVehicleExecute()
+        {
+            EventAggregator.GetEvent<AfterNewVehicleDetailOpenedEvent>().Publish(
+                new AfterNewVehicleDetailOpenedEventArgs
+                {
+                    VehicleModelId = vehicleModel.Id,
+                    ViewModelName = nameof(VehicleDetailVM)
+                });
+        }
+
+        private bool OnCreateNewVehicleCanExecute()
+        {
+            return VehicleModel.Id > 0;
         }
 
         #endregion

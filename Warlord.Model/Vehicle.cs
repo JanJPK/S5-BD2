@@ -8,7 +8,6 @@ namespace Warlord.Model
         #region Public Properties
 
         [Required]
-        [StringLength(30)]
         public string Color { get; set; }
 
         public string Condition { get; set; }
@@ -23,16 +22,19 @@ namespace Warlord.Model
 
         public Order Order { get; set; }
 
+        public int? OrderId { get; set; }
+
         [Required]
-        public float Price { get; set; }
+        public int Price { get; set; }
+
+        [Timestamp]
+        public byte[] RowVersion { get; set; }
 
         public VehicleModel VehicleModel { get; set; }
 
         [Required]
         public int VehicleModelId { get; set; }
 
-        [Timestamp]
-        public byte[] RowVersion { get; set; }
         #endregion
     }
 }

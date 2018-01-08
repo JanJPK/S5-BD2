@@ -1,5 +1,8 @@
-﻿using System.Data.Entity.Migrations;
+﻿using System;
+using System.Data.Entity.Migrations;
+using System.Data.Entity.Validation;
 using System.Linq;
+using System.Text;
 using Warlord.Model;
 
 namespace Warlord.DataAccess.Migrations
@@ -125,6 +128,88 @@ namespace Warlord.DataAccess.Migrations
                 });
 
             context.SaveChanges();
+
+            context.Vehicles.AddOrUpdate(
+                v => v.Id,
+                new Vehicle
+                {
+                    Id = 1,
+                    VehicleModelId = 1,
+                    Color ="Green with black blob camo pattern.",
+                    Condition="Perfect condition; fully renovated and displayed in museum.",
+                    DateOfManufacture = new DateTime(1980, 11, 20),
+                    Price = 100000
+                },
+                new Vehicle
+                {
+                    Id = 2,
+                    VehicleModelId = 1,
+                    Color = "Plain tan paint.",
+                    Condition = "Bent mudguards, missing splash screen and rear storage box.",
+                    DateOfManufacture = new DateTime(1991, 5, 15),
+                    Price = 85000
+                },
+                new Vehicle
+                {
+                    Id = 3,
+                    VehicleModelId = 1,
+                    Color = "Plain sand paint.",
+                    Condition = "Mudguards and side skirts either damaged or missing; most storage boxes completely destroyed. Diving snorkel instead of left storage box.",
+                    DateOfManufacture = new DateTime(1989, 1, 25),
+                    Price = 70000
+                },
+                new Vehicle
+                {
+                    Id = 4,
+                    VehicleModelId = 5,
+                    Color = "Tan, light and dark green stripe camouflage.",
+                    Condition = "Normal condition; used by a collector.",
+                    DateOfManufacture = new DateTime(1967, 6, 20),
+                    Price = 50000
+                },
+                new Vehicle
+                {
+                    Id = 5,
+                    VehicleModelId = 2,
+                    Color = "Plain olivgrun paint with DDR markings.",
+                    Condition = "Good condition; never used in combat. Used to be a part of private collection for many years before we acquired it.",
+                    DateOfManufacture = new DateTime(1970, 2, 10),
+                    Price = 58000
+                },
+                new Vehicle
+                {
+                    Id = 6,
+                    VehicleModelId = 2,
+                    Color = "Plain white.",
+                    Condition = "Good condition; lacks secondary armament. Israeli Tiran-4 modification package.",
+                    DateOfManufacture = new DateTime(1965, 12, 12),
+                    Price = 50000
+                });
+
+            // Block which allows to catch and display exceptions when running "Update-Database" command through Package Manager Console.
+            try
+            {
+                context.SaveChanges();
+            }
+            catch (DbEntityValidationException dbValEx)
+            {
+                var outputLines = new StringBuilder();
+                foreach (var eve in dbValEx.EntityValidationErrors)
+                {
+                    outputLines.AppendFormat("{0}: Entity of type \"{1}\" in state \"{2}\" has the following validation errors:"
+                        , DateTime.Now, eve.Entry.Entity.GetType().Name, eve.Entry.State);
+
+                    foreach (var ve in eve.ValidationErrors)
+                    {
+                        outputLines.AppendFormat("- Property: \"{0}\", Error: \"{1}\""
+                            , ve.PropertyName, ve.ErrorMessage);
+                    }
+                }
+
+                throw new DbEntityValidationException(string.Format("Validation errors\r\n{0}"
+                    , outputLines.ToString()), dbValEx);
+            }
+
         }
 
         #endregion

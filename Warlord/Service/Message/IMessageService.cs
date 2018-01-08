@@ -1,11 +1,12 @@
-﻿using System.Threading.Tasks;
-
-namespace Warlord.Service.Message
+﻿namespace Warlord.Service.Message
 {
     public interface IMessageService
     {
-        void ShowInfoDialogAsync(string text, string title = "Information");
-        Task<MessageResult> ShowOkCancelDialogAsync(string text, string title);
-        Task<bool> ShowConfirmDialogAsync(string text, string title);
+        #region Public Methods and Operators
+
+        bool ShowConfirmDialog(string text, string title = "Question");
+        void ShowInfoDialog(string text, string title = "Information");
+
+        #endregion
     }
 }

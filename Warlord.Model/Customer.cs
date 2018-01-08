@@ -39,7 +39,12 @@ namespace Warlord.Model
 
         public ICollection<Order> Orders { get; set; }
 
-        public int? Phone { get; set; }
+        [Phone]
+        public string Phone { get; set; }
+
+        [StringLength(50)]
+        [EmailAddress]
+        public string Email { get; set; }
 
         [Required]
         [StringLength(15)]
