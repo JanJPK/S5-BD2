@@ -79,8 +79,8 @@ namespace Warlord.ViewModel.Detail
             if (HasChanges)
             {
                 var result = MessageService.ShowConfirmDialog(
-                    "You've made changes. Close this item?", "Question");
-                if (result)
+                    "You've made changes. Close this item?");
+                if (!result)
                 {
                     return;
                 }

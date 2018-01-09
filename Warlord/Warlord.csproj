@@ -43,6 +43,9 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="MahApps.Metro, Version=1.5.0.23, Culture=neutral, PublicKeyToken=f4fb5a3c4d1e5b4f, processorArchitecture=MSIL">
+      <HintPath>..\packages\MahApps.Metro.1.5.0\lib\net45\MahApps.Metro.dll</HintPath>
+    </Reference>
     <Reference Include="Prism, Version=6.3.0.0, Culture=neutral, PublicKeyToken=40ee6c3a2184dc59, processorArchitecture=MSIL">
       <HintPath>..\packages\Prism.Core.6.3.0\lib\net45\Prism.dll</HintPath>
     </Reference>
@@ -54,6 +57,9 @@
     <Reference Include="System.Numerics" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\MahApps.Metro.1.5.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -90,7 +96,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Event\AfterNewOrderDetailOpenedEvent.cs" />
     <Compile Include="Event\AfterNewVehicleDetailOpenedEvent.cs" />
+    <Compile Include="Event\AfterNewVehicleModelDetailOpenedEvent.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Service\Lookups\ICustomerLookupService.cs" />
     <Compile Include="Service\Lookups\IManufacturerLookupService.cs" />
@@ -130,11 +138,23 @@
     <Compile Include="ViewModel\Detail\VehicleDetailVM.cs" />
     <Compile Include="ViewModel\Detail\VehicleModelDetailVM.cs" />
     <Compile Include="ViewModel\MainVM.cs" />
+    <Compile Include="View\CustomerBrowseView.xaml.cs">
+      <DependentUpon>CustomerBrowseView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\CustomerDetailView.xaml.cs">
+      <DependentUpon>CustomerDetailView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\ManufacturerBrowseView.xaml.cs">
       <DependentUpon>ManufacturerBrowseView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\ManufacturerDetailView.xaml.cs">
       <DependentUpon>ManufacturerDetailView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\OrderBrowseView.xaml.cs">
+      <DependentUpon>OrderBrowseView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\OrderDetailView.xaml.cs">
+      <DependentUpon>OrderDetailView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\VehicleBrowseView.xaml.cs">
       <DependentUpon>VehicleBrowseView.xaml</DependentUpon>
@@ -173,11 +193,27 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="View\CustomerBrowseView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\CustomerDetailView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\ManufacturerBrowseView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="View\ManufacturerDetailView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\OrderBrowseView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\OrderDetailView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

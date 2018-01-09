@@ -41,7 +41,11 @@ namespace Warlord.Startup
             builder.RegisterType<VehicleModelDetailVM>().Keyed<IDetailVM>(nameof(VehicleModelDetailVM));
             builder.RegisterType<VehicleModelBrowseVM>().Keyed<IDetailVM>(nameof(VehicleModelBrowseVM));
             builder.RegisterType<VehicleDetailVM>().Keyed<IDetailVM>(nameof(VehicleDetailVM));
-            //builder.RegisterType<VehicleBrowseVM>().Keyed<IDetailVM>(nameof(VehicleBrowseVM));
+            builder.RegisterType<VehicleBrowseVM>().Keyed<IDetailVM>(nameof(VehicleBrowseVM));
+            builder.RegisterType<OrderDetailVM>().Keyed<IDetailVM>(nameof(OrderDetailVM));
+            builder.RegisterType<OrderBrowseVM>().Keyed<IDetailVM>(nameof(OrderBrowseVM));
+            builder.RegisterType<CustomerDetailVM>().Keyed<IDetailVM>(nameof(CustomerDetailVM));
+            builder.RegisterType<CustomerBrowseVM>().Keyed<IDetailVM>(nameof(CustomerBrowseVM));
 
             return builder.Build();
         }

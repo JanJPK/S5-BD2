@@ -1,10 +1,7 @@
-﻿using System.Collections.ObjectModel;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Prism.Commands;
 using Prism.Events;
-using Warlord.Event;
 using Warlord.Model;
-using Warlord.Service.Lookups;
 using Warlord.Service.Message;
 using Warlord.Service.Repositories;
 using Warlord.Wrappers;
@@ -57,7 +54,7 @@ namespace Warlord.ViewModel.Detail
             }
         }
 
-        public int VehicleModelId { get; set;}
+        public int VehicleModelId { get; set; }
 
         #endregion
 
@@ -66,7 +63,7 @@ namespace Warlord.ViewModel.Detail
         public override async Task LoadAsync(int id)
         {
             var vehicle = id > 0
-                ? await vehicleRepository.GetByIdAsync(id)
+                ? await LoadVehicle(id)
                 : CreateNewVehicle();
 
             var vehicleModel = await vehicleModelRepository.GetByIdAsync(VehicleModelId);
@@ -74,7 +71,7 @@ namespace Warlord.ViewModel.Detail
             Id = id;
 
             InitializeVehicleModel(vehicleModel);
-            InitializeVehicle(vehicle);         
+            InitializeVehicle(vehicle);
         }
 
         #endregion
@@ -126,6 +123,13 @@ namespace Warlord.ViewModel.Detail
         private void InitializeVehicleModel(VehicleModel model)
         {
             vehicleModel = new VehicleModelWrapper(model);
+        }
+
+        private async Task<Vehicle> LoadVehicle(int id)
+        {
+            var vehicle = await vehicleRepository.GetByIdAsync(id);
+            VehicleModelId = vehicle.VehicleModelId;
+            return vehicle;
         }
 
         private void SetTitle()

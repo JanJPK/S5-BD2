@@ -4,9 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
-             d:DesignHeight="400" d:DesignWidth="400">
+             d:DesignHeight="800" d:DesignWidth="800">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -22,7 +23,7 @@
         
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto" MinWidth="200"/>
             <ColumnDefinition Width="100"/>
         </Grid.ColumnDefinitions>
 
@@ -78,7 +79,13 @@
                  Text="{Binding VehicleModel.EnginePower, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                  Margin="10 0 10 10"/>
 
-        <StackPanel Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="3"
+        <Label Grid.Row="8" Grid.Column="0"
+               Content="Weight"/>
+        <TextBox Grid.Row="8" Grid.Column="1"
+                 Text="{Binding VehicleModel.Weight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                 Margin="10 0 10 10"/>
+
+        <StackPanel Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="3"
                     Orientation="Horizontal">
             <Button Content="Save" Width="125" Margin="10"
                     Command="{Binding SaveCommand}"/>

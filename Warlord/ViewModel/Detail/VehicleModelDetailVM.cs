@@ -44,6 +44,8 @@ namespace Warlord.ViewModel.Detail
 
         #region Public Properties
 
+        public ICommand CreateNewVehicleCommand { get; }
+
         public ObservableCollection<LookupItem> Manufacturers { get; }
 
         public VehicleModelWrapper VehicleModel
@@ -55,8 +57,6 @@ namespace Warlord.ViewModel.Detail
                 OnPropertyChanged();
             }
         }
-
-        public ICommand CreateNewVehicleCommand { get; }
 
         #endregion
 
@@ -77,6 +77,48 @@ namespace Warlord.ViewModel.Detail
         #endregion
 
         #region Methods
+
+        protected override async void OnDeleteExecute()
+        {
+            if (await vehicleModelRepository.HasVehiclesAsync(VehicleModel.Id))
+            {
+                MessageService.ShowInfoDialog(
+                    $"Models of {VehicleModel.Name} are currently up for sale and therefore this entity cannot be deleted.");
+                return;
+            }
+
+            bool result = MessageService.ShowConfirmDialog($"Do you wish to delete the model {VehicleModel.Name}?");
+            if (result)
+            {
+                vehicleModelRepository.Remove(VehicleModel.Model);
+                await vehicleModelRepository.SaveAsync();
+                RaiseDetailDeletedEvent(VehicleModel.Id);
+            }
+        }
+
+        protected override bool OnSaveCanExecute()
+        {
+            return VehicleModel != null
+                   && !VehicleModel.HasErrors
+                   && HasChanges;
+        }
+
+        protected override async void OnSaveExecute()
+        {
+            await SaveWithOptimisticConcurrencyAsync(vehicleModelRepository.SaveAsync);
+            SetTitle();
+            AfterSaveAction();
+            await LoadAsync(VehicleModel.Id);
+        }
+
+        private async void AfterCollectionSaved(AfterCollectionSavedEventArgs args)
+        {
+            if (args.ViewModelName == nameof(ManufacturerDetailVM))
+            {
+                await LoadManufacturersAsync();
+            }
+            SetTitle();
+        }
 
         private void AfterSaveAction()
         {
@@ -118,6 +160,7 @@ namespace Warlord.ViewModel.Detail
                 VehicleModel.Name = "New vehicle model";
                 VehicleModel.Engine = "";
                 VehicleModel.MainArmament = "";
+                VehicleModel.ManufacturerId = 0;
             }
 
             SetTitle();
@@ -126,7 +169,7 @@ namespace Warlord.ViewModel.Detail
         private async Task LoadManufacturersAsync()
         {
             Manufacturers.Clear();
-            Manufacturers.Add(new NullLookupItem {DisplayMember = " - "});
+            //Manufacturers.Add(new NullLookupItem {DisplayMember = " - "});
 
             var lookup = await manufacturerLookupService.GetManufacturerLookupAsync();
             foreach (var lookupItem in lookup)
@@ -135,56 +178,9 @@ namespace Warlord.ViewModel.Detail
             }
         }
 
-        private void SetTitle()
+        private bool OnCreateNewVehicleCanExecute()
         {
-            Title = VehicleModel.ManufacturerId > 0
-                ? $"{Manufacturers[(int) VehicleModel.ManufacturerId].DisplayMember} {VehicleModel.Name}"
-                : $"{VehicleModel.Name}";
-        }
-
-        #endregion
-
-        #region Events
-
-        protected override async void OnDeleteExecute()
-        {
-            if (await vehicleModelRepository.HasVehiclesAsync(VehicleModel.Id))
-            {
-                MessageService.ShowInfoDialog(
-                    $"Models of {VehicleModel.Name} are currently up for sale and therefore this entity cannot be deleted.");
-                return;
-            }
-
-            bool result = MessageService.ShowConfirmDialog($"Do you wish to delete the model {VehicleModel.Name}?");
-            if (result)
-            {
-                vehicleModelRepository.Remove(VehicleModel.Model);
-                await vehicleModelRepository.SaveAsync();
-                RaiseDetailDeletedEvent(VehicleModel.Id);
-            }
-        }
-
-        protected override bool OnSaveCanExecute()
-        {
-            return VehicleModel != null
-                   && !VehicleModel.HasErrors
-                   && HasChanges;
-        }
-
-        protected override async void OnSaveExecute()
-        {
-            await SaveWithOptimisticConcurrencyAsync(vehicleModelRepository.SaveAsync);
-            SetTitle();
-            AfterSaveAction();
-        }
-
-        private async void AfterCollectionSaved(AfterCollectionSavedEventArgs args)
-        {
-            if (args.ViewModelName == nameof(ManufacturerDetailVM))
-            {
-                await LoadManufacturersAsync();
-            }
-            SetTitle();
+            return VehicleModel.Id > 0;
         }
 
         private void OnCreateNewVehicleExecute()
@@ -197,9 +193,11 @@ namespace Warlord.ViewModel.Detail
                 });
         }
 
-        private bool OnCreateNewVehicleCanExecute()
+        private void SetTitle()
         {
-            return VehicleModel.Id > 0;
+            Title = VehicleModel.ManufacturerId > 0
+                ? $"{Manufacturers[VehicleModel.ManufacturerId].DisplayMember} {VehicleModel.Name}"
+                : $"{VehicleModel.Name}";
         }
 
         #endregion

@@ -6,5 +6,6 @@ namespace Warlord.Service.Lookups
     public interface IVehicleModelLookupService
     {
         Task<IEnumerable<LookupItem>> GetVehicleModelLookupAsync();
+        Task<IEnumerable<LookupItem>> GetVehicleModelLookupByManufacturerAsync(int id);
     }
 }

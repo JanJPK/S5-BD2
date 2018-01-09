@@ -5,9 +5,15 @@ namespace Warlord.Wrappers
 {
     public class VehicleModelWrapper : BaseWrapper<VehicleModel>
     {
+        #region Constructors and Destructors
+
         public VehicleModelWrapper(VehicleModel model) : base(model)
         {
         }
+
+        #endregion
+
+        #region Public Properties
 
         public int Crew
         {
@@ -35,13 +41,25 @@ namespace Warlord.Wrappers
             set => SetValue(value);
         }
 
-        public string SecondaryArmament
+        public int ManufacturerId
+        {
+            get => GetValue<int>();
+            set => SetValue(value);
+        }
+
+        public Manufacturer Manufacturer
+        {
+            get => GetValue<Manufacturer>();
+            set => SetValue(value);
+        }
+
+        public string Name
         {
             get => GetValue<string>();
             set => SetValue(value);
         }
 
-        public string Name
+        public string SecondaryArmament
         {
             get => GetValue<string>();
             set => SetValue(value);
@@ -53,23 +71,9 @@ namespace Warlord.Wrappers
             set => SetValue(value);
         }
 
-        public int? ManufacturerId
-        {
-            get => GetValue<int>();
-            set => SetValue(value);
-        }
+        #endregion
 
-        public string ManufacturerShortName
-        {
-            get => GetValue<string>();
-            set => SetValue(value);
-        }
-
-        public Manufacturer Manufacturer
-        {
-            get => GetValue<Manufacturer>();
-            set => SetValue(value);
-        }
+        #region Methods
 
         protected override IEnumerable<string> ValidateProperty(string propertyName)
         {
@@ -92,7 +96,18 @@ namespace Warlord.Wrappers
                     }
                     break;
                 }
+
+                case nameof(ManufacturerId):
+                {
+                    if (ManufacturerId < 1)
+                    {
+                        yield return "Correct manufacturer must be selected.";
+                    }
+                    break;
+                }
             }
         }
+
+        #endregion
     }
 }

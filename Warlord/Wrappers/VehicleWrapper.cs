@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Warlord.Model;
 
 namespace Warlord.Wrappers
@@ -47,13 +48,7 @@ namespace Warlord.Wrappers
             set => SetValue(value);
         }
 
-        public float Price
-        {
-            get => GetValue<float>();
-            set => SetValue(value);
-        }
-
-        public int? VehicleModelId
+        public int Price
         {
             get => GetValue<int>();
             set => SetValue(value);
@@ -63,6 +58,34 @@ namespace Warlord.Wrappers
         {
             get => GetValue<VehicleModel>();
             set => SetValue(value);
+        }
+
+        #endregion
+
+        #region Methods
+
+        protected override IEnumerable<string> ValidateProperty(string propertyName)
+        {
+            switch (propertyName)
+            {
+                case nameof(Price):
+                {
+                    if (Price <= 0)
+                    {
+                        yield return "Price cannot be negative or zero.";
+                    }
+                    break;
+                }
+
+                case nameof(DateOfManufacture):
+                {
+                    if (DateOfManufacture > DateTime.Today)
+                    {
+                        yield return "Vehicle was not manufactured in the future.";
+                    }
+                    break;
+                }
+            }
         }
 
         #endregion

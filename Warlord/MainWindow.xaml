@@ -1,16 +1,18 @@
-﻿<Window x:Class="Warlord.MainWindow"
+﻿<controls:MetroWindow x:Class="Warlord.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:local="clr-namespace:Warlord"
         mc:Ignorable="d"
         xmlns:detail="clr-namespace:Warlord.ViewModel.Detail"
         xmlns:browse="clr-namespace:Warlord.ViewModel.Detail.Browse"
         xmlns:view="clr-namespace:Warlord.View"
-        Title="MainWindow" Height="600" Width="800">
+        Title="MainWindow" Height="800" Width="1200">
+    
+    <!-- Data templates binding view models to views -->
     <Window.Resources>
-
         <DataTemplate DataType="{x:Type detail:ManufacturerDetailVM}">
             <view:ManufacturerDetailView />
         </DataTemplate>
@@ -31,7 +33,20 @@
         <DataTemplate DataType="{x:Type browse:VehicleBrowseVM}">
             <view:VehicleBrowseView />
         </DataTemplate>
-        
+
+        <DataTemplate DataType="{x:Type detail:OrderDetailVM}">
+            <view:OrderDetailView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type browse:OrderBrowseVM}">
+            <view:OrderBrowseView />
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type detail:CustomerDetailVM}">
+            <view:CustomerDetailView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type browse:CustomerBrowseVM}">
+            <view:CustomerBrowseView />
+        </DataTemplate>
     </Window.Resources>
 
     <Grid>
@@ -48,21 +63,33 @@
         <!-- Menu toolbar on top -->
         <Menu Grid.Row="0" Grid.ColumnSpan="2">
             <MenuItem Header="Create">
-                <MenuItem Header="New vehicle model"
-                          Command="{Binding CreateNewDetailViewCommand}"
-                          CommandParameter="{x:Type detail:VehicleModelDetailVM}" />
                 <MenuItem Header="New manufacturer"
                           Command="{Binding CreateNewDetailViewCommand}"
                           CommandParameter="{x:Type detail:ManufacturerDetailVM}" />
+                <MenuItem Header="New vehicle model"
+                          Command="{Binding CreateNewDetailViewCommand}"
+                          CommandParameter="{x:Type detail:VehicleModelDetailVM}" />
+                <MenuItem Header="New customer"
+                          Command="{Binding CreateNewDetailViewCommand}"
+                          CommandParameter="{x:Type detail:CustomerDetailVM}" />
             </MenuItem>
 
             <MenuItem Header="Browse">
-                <MenuItem Header="Vehicle models"
-                          Command="{Binding OpenSingleDetailViewCommand}"
-                          CommandParameter="{x:Type browse:VehicleModelBrowseVM}" />
                 <MenuItem Header="Manufacturers"
                           Command="{Binding OpenSingleDetailViewCommand}"
                           CommandParameter="{x:Type browse:ManufacturerBrowseVM}" />
+                <MenuItem Header="Vehicle models"
+                          Command="{Binding OpenSingleDetailViewCommand}"
+                          CommandParameter="{x:Type browse:VehicleModelBrowseVM}" />
+                <MenuItem Header="Vehicles"
+                          Command="{Binding OpenSingleDetailViewCommand}"
+                          CommandParameter="{x:Type browse:VehicleBrowseVM}" />
+                <MenuItem Header="Orders"
+                          Command="{Binding OpenSingleDetailViewCommand}"
+                          CommandParameter="{x:Type browse:OrderBrowseVM}" />
+                <MenuItem Header="Customers"
+                          Command="{Binding OpenSingleDetailViewCommand}"
+                          CommandParameter="{x:Type browse:CustomerBrowseVM}" />
             </MenuItem>
         </Menu>
 
@@ -84,4 +111,4 @@
             </TabControl.ItemTemplate>
         </TabControl>
     </Grid>
-</Window>
+</controls:MetroWindow>

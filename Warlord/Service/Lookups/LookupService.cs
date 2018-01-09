@@ -87,6 +87,38 @@ namespace Warlord.Service.Lookups
             }
         }
 
+        public async Task<IEnumerable<LookupItem>> GetVehicleLookupByVehicleModelAsync(int id)
+        {
+            using (var ctx = contextCreator())
+            {
+                return await ctx.Vehicles.AsNoTracking()
+                    .Where(v => v.VehicleModelId == id)
+                    .Select(v =>
+                        new LookupItem
+                        {
+                            Id = v.Id,
+                            DisplayMember = v.VehicleModel.Name + " " + v.Price + "€"
+                        })
+                    .ToListAsync();
+            }
+        }
+
+        public async Task<IEnumerable<LookupItem>> GetVehicleLookupByOrderAsync(int id)
+        {
+            using (var ctx = contextCreator())
+            {
+                return await ctx.Vehicles.AsNoTracking()
+                    .Where(v => v.OrderId == id)
+                    .Select(v =>
+                        new LookupItem
+                        {
+                            Id = v.Id,
+                            DisplayMember = v.VehicleModel.Name + " " + v.Price + "€"
+                        })
+                    .ToListAsync();
+            }
+        }
+
         public async Task<IEnumerable<LookupItem>> GetVehicleModelLookupAsync()
         {
             using (var ctx = contextCreator())
@@ -97,6 +129,22 @@ namespace Warlord.Service.Lookups
                         {
                             Id = vm.Id,
                             DisplayMember = vm.Manufacturer.ShortName + " " +  vm.Name
+                        })
+                    .ToListAsync();
+            }
+        }
+
+        public async Task<IEnumerable<LookupItem>> GetVehicleModelLookupByManufacturerAsync(int id)
+        {
+            using (var ctx = contextCreator())
+            {
+                return await ctx.VehicleModels.AsNoTracking()
+                    .Where(vm => vm.ManufacturerId == id)
+                    .Select(vm =>
+                        new LookupItem
+                        {
+                            Id = vm.Id,
+                            DisplayMember = vm.Manufacturer.ShortName + " " + vm.Name
                         })
                     .ToListAsync();
             }
