@@ -6,6 +6,7 @@ using System.Windows.Input;
 using Prism.Commands;
 using Prism.Events;
 using Warlord.Event;
+using Warlord.Service;
 using Warlord.Service.Message;
 
 namespace Warlord.ViewModel.Detail
@@ -25,10 +26,13 @@ namespace Warlord.ViewModel.Detail
         #region Constructors and Destructors
 
         protected BaseDetailVM(IEventAggregator eventAggregator,
-            IMessageService messageService)
+            IMessageService messageService,
+            IUserPrivilege userPrivilege)
         {
             EventAggregator = eventAggregator;
             MessageService = messageService;
+            UserPrivilege = userPrivilege;
+
             SaveCommand = new DelegateCommand(OnSaveExecute, OnSaveCanExecute);
             DeleteCommand = new DelegateCommand(OnDeleteExecute);
             CloseDetailViewCommand = new DelegateCommand(OnCloseDetailViewExecute);
@@ -182,5 +186,16 @@ namespace Warlord.ViewModel.Detail
         }
 
         #endregion
+
+        private IUserPrivilege userPrivilege;
+        public IUserPrivilege UserPrivilege
+        {
+            get => userPrivilege;
+            set
+            {
+                userPrivilege = value;
+                OnPropertyChanged();
+            }
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Prism.Events;
 using Warlord.DataAccess;
+using Warlord.Service;
 using Warlord.Service.Lookups;
 using Warlord.Service.Message;
 using Warlord.Service.Repositories;
@@ -18,6 +19,7 @@ namespace Warlord.Startup
 
             // Event handling.
             builder.RegisterType<EventAggregator>().As<IEventAggregator>().SingleInstance();
+            builder.RegisterType<UserPrivilege>().As<IUserPrivilege>().SingleInstance();
 
             // Database context.
             builder.RegisterType<WarlordDbContext>().AsSelf();

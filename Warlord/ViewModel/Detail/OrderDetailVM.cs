@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Prism.Commands;
 using Prism.Events;
 using Warlord.Model;
+using Warlord.Service;
 using Warlord.Service.Lookups;
 using Warlord.Service.Message;
 using Warlord.Service.Repositories;
@@ -24,9 +25,9 @@ namespace Warlord.ViewModel.Detail
 
         #region Constructors and Destructors
 
-        public OrderDetailVM(IEventAggregator eventAggregator, IMessageService messageService,
+        public OrderDetailVM(IEventAggregator eventAggregator, IMessageService messageService, IUserPrivilege userPrivilege,
             IOrderRepository orderRepository, IVehicleLookupService vehicleLookupService)
-            : base(eventAggregator, messageService)
+            : base(eventAggregator, messageService, userPrivilege)
         {
             this.vehicleLookupService = vehicleLookupService;
             this.orderRepository = orderRepository;

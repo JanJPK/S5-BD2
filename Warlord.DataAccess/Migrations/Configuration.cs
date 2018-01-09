@@ -142,7 +142,8 @@ namespace Warlord.DataAccess.Migrations
                         City = "Bahalamar",
                         PostalCode = "12-345",
                         Address = "Bombay st.",
-                        Email = "artor@gmail.com"
+                        Email = "artor@gmail.com",
+                        Phone = "123456789"
                     },
                     new Customer
                     {
@@ -151,7 +152,8 @@ namespace Warlord.DataAccess.Migrations
                         City = "Berkele",
                         PostalCode = "55-666",
                         Address = "Euroshopjar st.",
-                        Email = "spurdospardo@gmail.com"
+                        Email = "spurdospardo@gmail.com",
+                        Phone = "123456789"
                     },
                     new Customer
                     {
@@ -160,7 +162,8 @@ namespace Warlord.DataAccess.Migrations
                         City = "Ronne",
                         PostalCode = "78-965",
                         Address = "Borgbolle st.",
-                        Email = "borgbjorkson@gmail.com"
+                        Email = "borgbjorkson@gmail.com",
+                        Phone = "123456789"
                     });
 
                 context.SaveChanges();

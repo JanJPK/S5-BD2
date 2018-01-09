@@ -7,6 +7,7 @@ using Autofac.Features.Indexed;
 using Prism.Commands;
 using Prism.Events;
 using Warlord.Event;
+using Warlord.Service;
 using Warlord.Service.Message;
 using Warlord.ViewModel.Detail;
 
@@ -21,16 +22,20 @@ namespace Warlord.ViewModel
 
         private int nextNewItemId;
 
+        
+
         #endregion
 
         #region Constructors and Destructors
 
         public MainVM(IIndex<string, IDetailVM> detailVMCreator,
             IEventAggregator eventAggregator,
-            IMessageService messageService)
+            IMessageService messageService,
+            IUserPrivilege userPrivilege)
         {
             this.messageService = messageService;
             this.detailVMCreator = detailVMCreator;
+            UserPrivilege = userPrivilege;
 
             DetailVMs = new ObservableCollection<IDetailVM>();
 
@@ -45,6 +50,10 @@ namespace Warlord.ViewModel
             OpenSingleDetailViewCommand = new DelegateCommand<Type>(OnOpenSingleDetailViewExecute);
 
             CreateVehicleModelBrowseView = new DelegateCommand<Type>(OnCreateNewVehicleModelBrowseView);
+
+            // Debug:
+            LogInCommand = new DelegateCommand<Type>(LogIn);
+            LogOutCommand = new DelegateCommand<Type>(LogOut);
         }
 
         #endregion
@@ -71,8 +80,6 @@ namespace Warlord.ViewModel
         }
 
         #endregion
-
-        // Detail VM - right TabControl, details of an entity; modification is allowed.
 
         #region Detail VM
 
@@ -209,7 +216,7 @@ namespace Warlord.ViewModel
             {
                 detailViewModel = detailVMCreator[args.ViewModelName];
 
-                ((VehicleDetailVM)detailViewModel).VehicleModelId = args.VehicleModelId;
+                ((VehicleDetailVM) detailViewModel).VehicleModelId = args.VehicleModelId;
                 await detailViewModel.LoadAsync(args.Id);
 
                 DetailVMs.Add(detailViewModel);
@@ -229,7 +236,7 @@ namespace Warlord.ViewModel
             {
                 detailViewModel = detailVMCreator[args.ViewModelName];
 
-                ((OrderDetailVM)detailViewModel).CustomerId = args.CustomerId;
+                ((OrderDetailVM) detailViewModel).CustomerId = args.CustomerId;
                 await detailViewModel.LoadAsync(args.Id);
 
                 DetailVMs.Add(detailViewModel);
@@ -239,6 +246,33 @@ namespace Warlord.ViewModel
         }
 
         #endregion
+
+        #endregion
+
+        #region Debug-related
+
+        private IUserPrivilege userPrivilege;
+        public IUserPrivilege UserPrivilege
+        {
+            get => userPrivilege;
+            set
+            {
+                userPrivilege = value;
+                OnPropertyChanged();
+            }
+        }
+        public ICommand LogInCommand { get; }
+        public ICommand LogOutCommand { get; }
+
+        private void LogIn(Type obj)
+        {
+            eventAggregator.GetEvent<OnUserLoggedInEvent>().Publish();
+        }
+
+        private void LogOut(Type obj)
+        {
+            eventAggregator.GetEvent<OnUserLoggedOutEvent>().Publish();
+        }
 
         #endregion
     }

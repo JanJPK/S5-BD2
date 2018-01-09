@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Prism.Events;
 using Warlord.Event;
+using Warlord.Service;
 using Warlord.Service.Lookups;
 using Warlord.Service.Message;
 
@@ -15,8 +16,8 @@ namespace Warlord.ViewModel.Detail.Browse
     {
         #region Constructors and Destructors
 
-        protected BaseBrowseVM(IEventAggregator eventAggregator, IMessageService messageService)
-            : base(eventAggregator, messageService)
+        protected BaseBrowseVM(IEventAggregator eventAggregator, IMessageService messageService, IUserPrivilege userPrivilege)
+            : base(eventAggregator, messageService, userPrivilege)
         {
             BrowseItems = new ObservableCollection<BrowseItem>();
 

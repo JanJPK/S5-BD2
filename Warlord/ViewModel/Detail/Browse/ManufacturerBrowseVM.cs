@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Prism.Events;
 using Warlord.Event;
+using Warlord.Service;
 using Warlord.Service.Lookups;
 using Warlord.Service.Message;
 
@@ -16,9 +17,9 @@ namespace Warlord.ViewModel.Detail.Browse
 
         #region Constructors and Destructors
 
-        public ManufacturerBrowseVM(IEventAggregator eventAggregator, IMessageService messageService,
+        public ManufacturerBrowseVM(IEventAggregator eventAggregator, IMessageService messageService, IUserPrivilege userPrivilege,
             IManufacturerLookupService lookupService)
-            : base(eventAggregator, messageService)
+            : base(eventAggregator, messageService, userPrivilege)
         {
             Title = "Manufacturers";
             this.lookupService = lookupService;

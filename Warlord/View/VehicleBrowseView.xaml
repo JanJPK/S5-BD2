@@ -6,40 +6,7 @@
              xmlns:local="clr-namespace:Warlord.View"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <UserControl.Resources>
-
-        <Style x:Key="NaviItemContainerStyle" TargetType="ContentPresenter">
-            <Setter Property="HorizontalAlignment" Value="Left" />
-            <Setter Property="Margin" Value="2" />
-        </Style>
-
-        <DataTemplate x:Key="NaviItemTemplate">
-            <Button Content="{Binding DisplayMember}"
-                    Command="{Binding OpenDetailViewCommand}"
-                    FontSize="16">
-                <Button.Template>
-                    <ControlTemplate TargetType="Button">
-
-                        <Grid x:Name="grid">
-                            <ContentPresenter />
-                        </Grid>
-
-                        <!-- Mouse responses -->
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Cursor" Value="Hand" />
-                                <Setter Property="FontWeight" Value="Bold" />
-                            </Trigger>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="FontWeight" Value="Normal" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Button.Template>
-            </Button>
-        </DataTemplate>
-    </UserControl.Resources>
-
+   
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50" />

@@ -4,6 +4,7 @@ using Prism.Commands;
 using Prism.Events;
 using Warlord.Event;
 using Warlord.Model;
+using Warlord.Service;
 using Warlord.Service.Message;
 using Warlord.Service.Repositories;
 using Warlord.Wrappers;
@@ -22,9 +23,9 @@ namespace Warlord.ViewModel.Detail
 
         #region Constructors and Destructors
 
-        public CustomerDetailVM(IEventAggregator eventAggregator, IMessageService messageService,
+        public CustomerDetailVM(IEventAggregator eventAggregator, IMessageService messageService, IUserPrivilege userPrivilege,
             ICustomerRepository customerRepository)
-            : base(eventAggregator, messageService)
+            : base(eventAggregator, messageService, userPrivilege)
         {
             this.customerRepository = customerRepository;
 

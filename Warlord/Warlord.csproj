@@ -99,7 +99,10 @@
     <Compile Include="Event\AfterNewOrderDetailOpenedEvent.cs" />
     <Compile Include="Event\AfterNewVehicleDetailOpenedEvent.cs" />
     <Compile Include="Event\AfterNewVehicleModelDetailOpenedEvent.cs" />
+    <Compile Include="Event\OnUserLoggedInEvent.cs" />
+    <Compile Include="Event\OnUserLoggedOutEvent.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Service\IUserPrivilege.cs" />
     <Compile Include="Service\Lookups\ICustomerLookupService.cs" />
     <Compile Include="Service\Lookups\IManufacturerLookupService.cs" />
     <Compile Include="Service\Lookups\IOrderLookupService.cs" />
@@ -121,6 +124,7 @@
     <Compile Include="Service\Repositories\OrderRepository.cs" />
     <Compile Include="Service\Repositories\VehicleModelRepository.cs" />
     <Compile Include="Service\Repositories\VehicleRepository.cs" />
+    <Compile Include="Service\UserPrivilege.cs" />
     <Compile Include="Startup\Bootstrapper.cs" />
     <Compile Include="ViewModel\BaseVM.cs" />
     <Compile Include="ViewModel\Detail\BaseDetailVM.cs" />

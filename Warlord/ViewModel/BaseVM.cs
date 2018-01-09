@@ -11,10 +11,6 @@ namespace Warlord.ViewModel
     {
         #region INotifyPropertyChanged
 
-
-
-        #endregion
-
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
@@ -22,5 +18,7 @@ namespace Warlord.ViewModel
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        #endregion
     }
 }

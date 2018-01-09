@@ -9,8 +9,10 @@
         xmlns:detail="clr-namespace:Warlord.ViewModel.Detail"
         xmlns:browse="clr-namespace:Warlord.ViewModel.Detail.Browse"
         xmlns:view="clr-namespace:Warlord.View"
-        Title="MainWindow" Height="800" Width="1200">
-    
+        Title="Warlord - Affordable Armament" 
+        Height="1000" Width="1600"
+        WindowStartupLocation="CenterScreen">
+
     <!-- Data templates binding view models to views -->
     <Window.Resources>
         <DataTemplate DataType="{x:Type detail:ManufacturerDetailVM}">
@@ -62,7 +64,8 @@
 
         <!-- Menu toolbar on top -->
         <Menu Grid.Row="0" Grid.ColumnSpan="2">
-            <MenuItem Header="Create">
+            <MenuItem Header="Create"
+                      IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}">
                 <MenuItem Header="New manufacturer"
                           Command="{Binding CreateNewDetailViewCommand}"
                           CommandParameter="{x:Type detail:ManufacturerDetailVM}" />
@@ -85,11 +88,20 @@
                           Command="{Binding OpenSingleDetailViewCommand}"
                           CommandParameter="{x:Type browse:VehicleBrowseVM}" />
                 <MenuItem Header="Orders"
+                          IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}"
                           Command="{Binding OpenSingleDetailViewCommand}"
                           CommandParameter="{x:Type browse:OrderBrowseVM}" />
                 <MenuItem Header="Customers"
+                          IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}"
                           Command="{Binding OpenSingleDetailViewCommand}"
                           CommandParameter="{x:Type browse:CustomerBrowseVM}" />
+            </MenuItem>
+
+            <MenuItem Header="Debug">
+                <MenuItem Header="Log in"
+                          Command="{Binding LogInCommand}"/>
+                <MenuItem Header="Log out"
+                          Command="{Binding LogOutCommand}"/>
             </MenuItem>
         </Menu>
 
