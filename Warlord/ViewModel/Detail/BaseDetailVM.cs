@@ -21,6 +21,8 @@ namespace Warlord.ViewModel.Detail
         private bool hasChanges;
         private string title;
 
+        private IUserPrivilege userPrivilege;
+
         #endregion
 
         #region Constructors and Destructors
@@ -68,6 +70,16 @@ namespace Warlord.ViewModel.Detail
             }
         }
 
+        public IUserPrivilege UserPrivilege
+        {
+            get => userPrivilege;
+            set
+            {
+                userPrivilege = value;
+                OnPropertyChanged();
+            }
+        }
+
         #endregion
 
         #region Public Methods and Operators
@@ -82,7 +94,7 @@ namespace Warlord.ViewModel.Detail
         {
             if (HasChanges)
             {
-                var result = MessageService.ShowConfirmDialog(
+                var result = await MessageService.ShowConfirmDialog(
                     "You've made changes. Close this item?");
                 if (!result)
                 {
@@ -114,12 +126,12 @@ namespace Warlord.ViewModel.Detail
                 var databaseValues = ex.Entries.Single().GetDatabaseValues();
                 if (databaseValues == null)
                 {
-                    MessageService.ShowInfoDialog("The entity has been deleted by another user.");
+                    await MessageService.ShowInfoDialog("The entity has been deleted by another user.");
                     RaiseDetailDeletedEvent(Id);
                     return;
                 }
 
-                var result = MessageService.ShowConfirmDialog(
+                var result = await MessageService.ShowConfirmDialog(
                     "The entity has been changed in the meantime by someone else. "
                     + "Click OK to save changes; click Cancel to reload entity from the database.");
 
@@ -186,16 +198,5 @@ namespace Warlord.ViewModel.Detail
         }
 
         #endregion
-
-        private IUserPrivilege userPrivilege;
-        public IUserPrivilege UserPrivilege
-        {
-            get => userPrivilege;
-            set
-            {
-                userPrivilege = value;
-                OnPropertyChanged();
-            }
-        }
     }
 }

@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
 using Prism.Events;
 using Warlord.Event;
 using Warlord.Service;
@@ -17,7 +19,8 @@ namespace Warlord.ViewModel.Detail.Browse
 
         #region Constructors and Destructors
 
-        public CustomerBrowseVM(IEventAggregator eventAggregator, IMessageService messageService, IUserPrivilege userPrivilege,
+        public CustomerBrowseVM(IEventAggregator eventAggregator, IMessageService messageService,
+            IUserPrivilege userPrivilege,
             ICustomerLookupService lookupService)
             : base(eventAggregator, messageService, userPrivilege)
         {
@@ -48,7 +51,7 @@ namespace Warlord.ViewModel.Detail.Browse
 
         #endregion
 
-        #region Methods
+        #region Event-related
 
         protected override void AfterDetailDeleted(AfterDetailDeletedEventArgs args)
         {

@@ -9,11 +9,11 @@ namespace Warlord.UI.Service.Message
     {
         #region Public Methods and Operators
 
-        //private MetroWindow MetroWindow => (MetroWindow)App.Current.MainWindow;
+        private MetroWindow MetroWindow => (MetroWindow)App.Current.MainWindow;
 
         public async void ShowInfoDialogAsync(string text, string title = "Information")
         {
-            //await MetroWindow.ShowMessageAsync(title, text);
+            await MetroWindow.ShowMessageAsync(title, text);
         }
 
         public async Task<MessageResult> ShowOkCancelDialogAsync(string text, string title)

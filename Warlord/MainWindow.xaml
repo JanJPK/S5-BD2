@@ -53,74 +53,97 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="150" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.LayoutTransform>
+                <ScaleTransform
+                    CenterX="0"
+                    CenterY="0"
+                    ScaleX="{Binding ElementName=UIScaleSlider, Path=Value}"
+                    ScaleY="{Binding ElementName=UIScaleSlider, Path=Value}"/>
+            </Grid.LayoutTransform>
 
-        <!-- Menu toolbar on top -->
-        <Menu Grid.Row="0" Grid.ColumnSpan="2">
-            <MenuItem Header="Create"
-                      IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}">
-                <MenuItem Header="New manufacturer"
-                          Command="{Binding CreateNewDetailViewCommand}"
-                          CommandParameter="{x:Type detail:ManufacturerDetailVM}" />
-                <MenuItem Header="New vehicle model"
-                          Command="{Binding CreateNewDetailViewCommand}"
-                          CommandParameter="{x:Type detail:VehicleModelDetailVM}" />
-                <MenuItem Header="New customer"
-                          Command="{Binding CreateNewDetailViewCommand}"
-                          CommandParameter="{x:Type detail:CustomerDetailVM}" />
-            </MenuItem>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
 
-            <MenuItem Header="Browse">
-                <MenuItem Header="Manufacturers"
-                          Command="{Binding OpenSingleDetailViewCommand}"
-                          CommandParameter="{x:Type browse:ManufacturerBrowseVM}" />
-                <MenuItem Header="Vehicle models"
-                          Command="{Binding OpenSingleDetailViewCommand}"
-                          CommandParameter="{x:Type browse:VehicleModelBrowseVM}" />
-                <MenuItem Header="Vehicles"
-                          Command="{Binding OpenSingleDetailViewCommand}"
-                          CommandParameter="{x:Type browse:VehicleBrowseVM}" />
-                <MenuItem Header="Orders"
-                          IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}"
-                          Command="{Binding OpenSingleDetailViewCommand}"
-                          CommandParameter="{x:Type browse:OrderBrowseVM}" />
-                <MenuItem Header="Customers"
-                          IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}"
-                          Command="{Binding OpenSingleDetailViewCommand}"
-                          CommandParameter="{x:Type browse:CustomerBrowseVM}" />
-            </MenuItem>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="150" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-            <MenuItem Header="Debug">
-                <MenuItem Header="Log in"
-                          Command="{Binding LogInCommand}"/>
-                <MenuItem Header="Log out"
-                          Command="{Binding LogOutCommand}"/>
-            </MenuItem>
-        </Menu>
+            <!-- Menu toolbar on top -->
+            <Menu Grid.Row="0" Grid.ColumnSpan="2">
+                <MenuItem Header="Create"
+                          IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}">
+                    <MenuItem Header="New manufacturer"
+                              Command="{Binding CreateNewDetailViewCommand}"
+                              CommandParameter="{x:Type detail:ManufacturerDetailVM}" />
+                    <MenuItem Header="New vehicle model"
+                              Command="{Binding CreateNewDetailViewCommand}"
+                              CommandParameter="{x:Type detail:VehicleModelDetailVM}" />
+                    <MenuItem Header="New customer"
+                              Command="{Binding CreateNewDetailViewCommand}"
+                              CommandParameter="{x:Type detail:CustomerDetailVM}" />
+                </MenuItem>
 
-        <!-- Detail tab control -->
-        <TabControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
-                    ItemsSource="{Binding DetailVMs}"
-                    SelectedItem="{Binding SelectedDetailVM, Mode=TwoWay}">
-            <TabControl.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding Title}" />
+                <MenuItem Header="Browse">
+                    <MenuItem Header="Manufacturers"
+                              Command="{Binding OpenSingleDetailViewCommand}"
+                              CommandParameter="{x:Type browse:ManufacturerBrowseVM}" />
+                    <MenuItem Header="Vehicle models"
+                              Command="{Binding OpenSingleDetailViewCommand}"
+                              CommandParameter="{x:Type browse:VehicleModelBrowseVM}" />
+                    <MenuItem Header="Vehicles"
+                              Command="{Binding OpenSingleDetailViewCommand}"
+                              CommandParameter="{x:Type browse:VehicleBrowseVM}" />
+                    <MenuItem Header="Orders"
+                              IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}"
+                              Command="{Binding OpenSingleDetailViewCommand}"
+                              CommandParameter="{x:Type browse:OrderBrowseVM}" />
+                    <MenuItem Header="Customers"
+                              IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}"
+                              Command="{Binding OpenSingleDetailViewCommand}"
+                              CommandParameter="{x:Type browse:CustomerBrowseVM}" />
+                </MenuItem>
 
-                        <Button Content="X"
-                                Command="{Binding CloseDetailViewCommand}"
-                                VerticalContentAlignment="Top"
-                                Margin="2 0 2 2" />
-                    </StackPanel>
-                </DataTemplate>
-            </TabControl.ItemTemplate>
-        </TabControl>
+                <MenuItem Header="User">
+                    <MenuItem Header="Log in"
+                              Command="{Binding LogInCommand}"/>
+                    <MenuItem Header="Log out"
+                              Command="{Binding LogOutCommand}"/>
+                </MenuItem>
+
+            </Menu>
+
+            <!-- Detail tab control -->
+            <TabControl Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+                        ItemsSource="{Binding DetailVMs}"
+                        SelectedItem="{Binding SelectedDetailVM, Mode=TwoWay}">
+                <TabControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Title}" />
+
+                            <Button Content="X"
+                                    Command="{Binding CloseDetailViewCommand}"
+                                    VerticalContentAlignment="Top"
+                                    Margin="2 0 2 2" />
+                        </StackPanel>
+                    </DataTemplate>
+                </TabControl.ItemTemplate>
+            </TabControl>
+        </Grid>
+
+        <GroupBox Grid.Row="1" Grid.Column="0">
+            <Slider x:Name="UIScaleSlider" 
+                    Value="1" Minimum="0.1" Maximum="4"
+                    ToolTip="Change scale of UI."/>
+        </GroupBox>
     </Grid>
+    
 </controls:MetroWindow>

@@ -31,7 +31,8 @@
                     <DataTemplate x:Key="NaviItemTemplate">
                         <Button Content="{Binding DisplayMember}"
                                 Command="{Binding OpenDetailViewCommand}"
-                                FontSize="16">
+                                FontSize="24"
+                                Margin="10 0 0 2">
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
 
@@ -55,6 +56,37 @@
                         </Button>
                     </DataTemplate>
 
+                    <DataTemplate x:Key="OrderAddedVehicleTemplate">
+                        <StackPanel Orientation="Horizontal"
+                                    Margin="10 0 10 0">
+                            <TextBlock Text="{Binding DisplayMember}"
+                                       FontSize="24"
+                                       Margin="0 0 0 0"/>
+                            <Button Content="[Vehicle details]"
+                                    Command="{Binding OpenDetailViewCommand}"
+                                    FontSize="24"
+                                    Margin="10 0 0 0">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+
+                                        <Grid x:Name="grid">
+                                            <ContentPresenter />
+                                        </Grid>
+
+                                        <!-- Mouse responses -->
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Cursor" Value="Hand" />
+                                                <Setter Property="Foreground" Value="#548e19" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </StackPanel>
+
+                    </DataTemplate>
+
                     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
                     <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
@@ -63,11 +95,12 @@
 
                     <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
                         <Setter Property="FontSize" Value="16" />
+                        <Setter Property="Margin" Value="10 10 10 10"></Setter>
                     </Style>
 
                     <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
                         <Setter Property="FontSize" Value="20" />
-                        <Setter Property="Margin" Value="0 10 10 10" />
+                        <Setter Property="Margin" Value="10 10 10 10" />
                     </Style>
 
                     <Style TargetType="Label" BasedOn="{StaticResource {x:Type Label}}">
@@ -78,12 +111,12 @@
 
                     <Style TargetType="xctk:DateTimePicker">
                         <Setter Property="Foreground" Value="White" />
-                        <Setter Property="Margin" Value="0 10 10 10" />
+                        <Setter Property="Margin" Value="10 10 10 10" />
                     </Style>
 
                     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                         <Setter Property="FontSize" Value="20" />
-                        <Setter Property="Margin" Value="0 10 10 10" />
+                        <Setter Property="Margin" Value="10 10 10 10" />
                         <!-- Error message under TextBox -->
                         <Setter Property="Validation.ErrorTemplate">
                             <Setter.Value>

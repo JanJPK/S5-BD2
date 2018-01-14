@@ -66,7 +66,7 @@ namespace Warlord.Service.Lookups
                         new LookupItem
                         {
                             Id = o.Id,
-                            DisplayMember = o.Id + "/" + o.Date + " " + o.Customer.Name
+                            DisplayMember = o.Id + "/" + o.Date.Day + "-" + o.Date.Month + "-" + o.Date.Year + " " + o.Customer.Name
                         })
                     .ToListAsync();
             }

@@ -1,4 +1,7 @@
-﻿using System.Windows;
+﻿using System.Threading.Tasks;
+using System.Windows;
+using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
 
 namespace Warlord.Service.Message
 {
@@ -7,6 +10,12 @@ namespace Warlord.Service.Message
     /// </summary>
     public class MessageService : IMessageService
     {
+        #region Properties
+
+        private MetroWindow MetroWindow => (MetroWindow) Application.Current.MainWindow;
+
+        #endregion
+
         #region Public Methods and Operators
 
         /// <summary>
@@ -15,12 +24,13 @@ namespace Warlord.Service.Message
         /// <param name="text">Text to display.</param>
         /// <param name="title">Dialog title.</param>
         /// <returns>True when user confirms; false when cancels.</returns>
-        public bool ShowConfirmDialog(string text, string title = "Question")
+        public async Task<bool> ShowConfirmDialog(string text, string title = "Question")
         {
-            //var result = await MetroWindow.ShowMessageAsync(title, text, MessageDialogStyle.AffirmativeAndNegative);
-            //return result == MahApps.Metro.Controls.Dialogs.MessageDialogResult.Affirmative;
-            var result = MessageBox.Show(text, title, MessageBoxButton.OKCancel);
-            return result == MessageBoxResult.OK;
+            var result = await MetroWindow.ShowMessageAsync(title, text, MessageDialogStyle.AffirmativeAndNegative);
+            if (result == MessageDialogResult.Affirmative)
+                return true;
+
+            return false;
         }
 
         /// <summary>
@@ -28,9 +38,9 @@ namespace Warlord.Service.Message
         /// </summary>
         /// <param name="text">Text to display.</param>
         /// <param name="title">Dialog title.</param>
-        public void ShowInfoDialog(string text, string title = "Information")
+        public async Task ShowInfoDialog(string text, string title = "Information")
         {
-            MessageBox.Show(text, title);
+            await MetroWindow.ShowMessageAsync(title, text);
         }
 
         #endregion

@@ -27,7 +27,8 @@ namespace Warlord.ViewModel.Detail
 
         #region Constructors and Destructors
 
-        public VehicleModelDetailVM(IEventAggregator eventAggregator, IMessageService messageService, IUserPrivilege userPrivilege,
+        public VehicleModelDetailVM(IEventAggregator eventAggregator, IMessageService messageService,
+            IUserPrivilege userPrivilege,
             IVehicleModelRepository vehicleModelRepository, IManufacturerLookupService manufacturerLookupService)
             : base(eventAggregator, messageService, userPrivilege)
         {
@@ -44,8 +45,6 @@ namespace Warlord.ViewModel.Detail
         #endregion
 
         #region Public Properties
-
-        public ICommand CreateNewVehicleCommand { get; }
 
         public ObservableCollection<LookupItem> Manufacturers { get; }
 
@@ -79,52 +78,11 @@ namespace Warlord.ViewModel.Detail
 
         #region Methods
 
-        protected override async void OnDeleteExecute()
-        {
-            if (await vehicleModelRepository.HasVehiclesAsync(VehicleModel.Id))
-            {
-                MessageService.ShowInfoDialog(
-                    $"Models of {VehicleModel.Name} are currently up for sale and therefore this entity cannot be deleted.");
-                return;
-            }
-
-            bool result = MessageService.ShowConfirmDialog($"Do you wish to delete the model {VehicleModel.Name}?");
-            if (result)
-            {
-                vehicleModelRepository.Remove(VehicleModel.Model);
-                await vehicleModelRepository.SaveAsync();
-                RaiseDetailDeletedEvent(VehicleModel.Id);
-            }
-        }
-
-        protected override bool OnSaveCanExecute()
-        {
-            return VehicleModel != null
-                   && !VehicleModel.HasErrors
-                   && HasChanges;
-        }
-
-        protected override async void OnSaveExecute()
-        {
-            await SaveWithOptimisticConcurrencyAsync(vehicleModelRepository.SaveAsync);
-            SetTitle();
-            AfterSaveAction();
-            await LoadAsync(VehicleModel.Id);
-        }
-
-        private async void AfterCollectionSaved(AfterCollectionSavedEventArgs args)
-        {
-            if (args.ViewModelName == nameof(ManufacturerDetailVM))
-            {
-                await LoadManufacturersAsync();
-            }
-            SetTitle();
-        }
-
         private void AfterSaveAction()
         {
+            SetTitle();
             HasChanges = vehicleModelRepository.HasChanges();
-            Id = vehicleModel.Id;
+            Id = VehicleModel.Id;
             RaiseDetailSavedEvent(VehicleModel.Id, Title);
         }
 
@@ -179,6 +137,19 @@ namespace Warlord.ViewModel.Detail
             }
         }
 
+        private void SetTitle()
+        {
+            Title = VehicleModel.ManufacturerId > 0
+                ? $"{Manufacturers[VehicleModel.ManufacturerId - 1].DisplayMember} {VehicleModel.Name}"
+                : $"{VehicleModel.Name}";
+        }
+
+        #endregion
+
+        #region Event-related
+
+        public ICommand CreateNewVehicleCommand { get; }
+
         private bool OnCreateNewVehicleCanExecute()
         {
             return VehicleModel.Id > 0;
@@ -186,19 +157,53 @@ namespace Warlord.ViewModel.Detail
 
         private void OnCreateNewVehicleExecute()
         {
-            EventAggregator.GetEvent<AfterNewVehicleDetailOpenedEvent>().Publish(
-                new AfterNewVehicleDetailOpenedEventArgs
+            EventAggregator.GetEvent<OnNewDependantDetailOpenedEvent>().Publish(
+                new OnNewDependantDetailOpenedEventArgs
                 {
-                    VehicleModelId = vehicleModel.Id,
+                    DependantOnId = vehicleModel.Id,
                     ViewModelName = nameof(VehicleDetailVM)
                 });
         }
 
-        private void SetTitle()
+        protected override async void OnDeleteExecute()
         {
-            Title = VehicleModel.ManufacturerId > 0
-                ? $"{Manufacturers[VehicleModel.ManufacturerId].DisplayMember} {VehicleModel.Name}"
-                : $"{VehicleModel.Name}";
+            if (await vehicleModelRepository.HasVehiclesAsync(VehicleModel.Id))
+            {
+                await MessageService.ShowInfoDialog(
+                    $"Models of {VehicleModel.Name} are currently up for sale and therefore this entity cannot be deleted.");
+                return;
+            }
+
+            bool result = await MessageService.ShowConfirmDialog($"Do you wish to delete the model {VehicleModel.Name}?");
+            if (result)
+            {
+                vehicleModelRepository.Remove(VehicleModel.Model);
+                await vehicleModelRepository.SaveAsync();
+                RaiseDetailDeletedEvent(VehicleModel.Id);
+            }
+        }
+
+        protected override bool OnSaveCanExecute()
+        {
+            return VehicleModel != null
+                   && !VehicleModel.HasErrors
+                   && HasChanges;
+        }
+
+        protected override async void OnSaveExecute()
+        {
+            await SaveWithOptimisticConcurrencyAsync(vehicleModelRepository.SaveAsync);
+            AfterSaveAction();
+            await LoadAsync(VehicleModel.Id);
+        }
+
+        private async void AfterCollectionSaved(AfterCollectionSavedEventArgs args)
+        {
+            if (args.ViewModelName == nameof(ManufacturerDetailVM))
+            {
+                await LoadManufacturersAsync();
+            }
+            SetTitle();
         }
 
         #endregion

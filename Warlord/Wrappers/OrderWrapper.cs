@@ -35,9 +35,9 @@ namespace Warlord.Wrappers
 
         public int Id => Model.Id;
 
-        public float TotalPrice
+        public int TotalPrice
         {
-            get => GetValue<float>();
+            get => GetValue<int>();
             set => SetValue(value);
         }
 

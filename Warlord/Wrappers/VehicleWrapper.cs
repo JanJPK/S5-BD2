@@ -42,9 +42,9 @@ namespace Warlord.Wrappers
 
         public int Id => Model.Id;
 
-        public Order Order
+        public int? OrderId
         {
-            get => GetValue<Order>();
+            get => GetValue<int>();
             set => SetValue(value);
         }
 
@@ -54,11 +54,7 @@ namespace Warlord.Wrappers
             set => SetValue(value);
         }
 
-        public VehicleModel VehicleModel
-        {
-            get => GetValue<VehicleModel>();
-            set => SetValue(value);
-        }
+        public bool IsAvailable => Model.Order == null ? true : false;
 
         #endregion
 

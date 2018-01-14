@@ -71,12 +71,12 @@ namespace Warlord.ViewModel.Detail
         {
             if (await customerRepository.HasOrdersAsync(Customer.Id))
             {
-                MessageService.ShowInfoDialog(
+                await MessageService.ShowInfoDialog(
                     $"Customer {Customer.Name} has orders and therefore this entity cannot be deleted.");
                 return;
             }
 
-            bool result = MessageService.ShowConfirmDialog($"Do you wish to delete the customer {Customer.Name}?");
+            bool result = await MessageService.ShowConfirmDialog($"Do you wish to delete the customer {Customer.Name}?");
             if (result)
             {
                 customerRepository.Remove(Customer.Model);
@@ -156,11 +156,11 @@ namespace Warlord.ViewModel.Detail
 
         private void OnCreateNewOrderExecute()
         {
-            EventAggregator.GetEvent<AfterNewOrderDetailOpenedEvent>().Publish(
-                new AfterNewOrderDetailOpenedEventArgs
+            EventAggregator.GetEvent<OnNewDependantDetailOpenedEvent>().Publish(
+                new OnNewDependantDetailOpenedEventArgs
                 {
-                    CustomerId = Customer.Id,
-                    ViewModelName = nameof(VehicleDetailVM)
+                    DependantOnId = Customer.Id,
+                    ViewModelName = nameof(OrderDetailVM)
                 });
         }
 

@@ -1,11 +1,13 @@
-﻿namespace Warlord.Service.Message
+﻿using System.Threading.Tasks;
+
+namespace Warlord.Service.Message
 {
     public interface IMessageService
     {
         #region Public Methods and Operators
 
-        bool ShowConfirmDialog(string text, string title = "Question");
-        void ShowInfoDialog(string text, string title = "Information");
+        Task<bool> ShowConfirmDialog(string text, string title = "Question");
+        Task ShowInfoDialog(string text, string title = "Information");
 
         #endregion
     }

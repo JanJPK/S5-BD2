@@ -96,9 +96,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Event\AfterNewOrderDetailOpenedEvent.cs" />
-    <Compile Include="Event\AfterNewVehicleDetailOpenedEvent.cs" />
-    <Compile Include="Event\AfterNewVehicleModelDetailOpenedEvent.cs" />
+    <Compile Include="Event\OnNewVehicleDetailOpenedEvent.cs" />
+    <Compile Include="Event\OnNewDependantDetailOpenedEvent.cs" />
     <Compile Include="Event\OnUserLoggedInEvent.cs" />
     <Compile Include="Event\OnUserLoggedOutEvent.cs" />
     <Compile Include="Properties\Annotations.cs" />
@@ -274,6 +273,9 @@
       <Project>{7cb45105-1590-4a68-8026-7baffe94cf98}</Project>
       <Name>Warlord.Model</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\warlord_logo_light.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -17,7 +17,8 @@ namespace Warlord.ViewModel.Detail.Browse
 
         #region Constructors and Destructors
 
-        public ManufacturerBrowseVM(IEventAggregator eventAggregator, IMessageService messageService, IUserPrivilege userPrivilege,
+        public ManufacturerBrowseVM(IEventAggregator eventAggregator, IMessageService messageService,
+            IUserPrivilege userPrivilege,
             IManufacturerLookupService lookupService)
             : base(eventAggregator, messageService, userPrivilege)
         {
@@ -48,7 +49,7 @@ namespace Warlord.ViewModel.Detail.Browse
 
         #endregion
 
-        #region Event Subscriptions
+        #region Event-related
 
         protected override void AfterDetailDeleted(AfterDetailDeletedEventArgs args)
         {

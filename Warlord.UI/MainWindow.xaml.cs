@@ -31,10 +31,10 @@ namespace Warlord.UI
 
         #region Methods
 
-        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
-        {
-            //await viewModel.LoadAsync();
-        }
+        //private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        //{
+        //    //await viewModel.LoadAsync();
+        //}
 
         #endregion
     }

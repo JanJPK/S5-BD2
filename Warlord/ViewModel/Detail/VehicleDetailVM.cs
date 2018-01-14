@@ -1,4 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.IO;
+using System.Threading.Tasks;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Prism.Commands;
 using Prism.Events;
 using Warlord.Model;
@@ -16,6 +20,8 @@ namespace Warlord.ViewModel.Detail
         private readonly IVehicleModelRepository vehicleModelRepository;
         private readonly IVehicleRepository vehicleRepository;
 
+        private ImageSource image;
+
         private VehicleWrapper vehicle;
         private VehicleModelWrapper vehicleModel;
 
@@ -23,7 +29,8 @@ namespace Warlord.ViewModel.Detail
 
         #region Constructors and Destructors
 
-        public VehicleDetailVM(IEventAggregator eventAggregator, IMessageService messageService, IUserPrivilege userPrivilege,
+        public VehicleDetailVM(IEventAggregator eventAggregator, IMessageService messageService,
+            IUserPrivilege userPrivilege,
             IVehicleRepository vehicleRepository, IVehicleModelRepository vehicleModelRepository)
             : base(eventAggregator, messageService, userPrivilege)
         {
@@ -34,6 +41,16 @@ namespace Warlord.ViewModel.Detail
         #endregion
 
         #region Public Properties
+
+        public ImageSource Image
+        {
+            get => image;
+            set
+            {
+                image = value;
+                OnPropertyChanged();
+            }
+        }
 
         public VehicleWrapper Vehicle
         {
@@ -73,6 +90,7 @@ namespace Warlord.ViewModel.Detail
 
             InitializeVehicleModel(vehicleModel);
             InitializeVehicle(vehicle);
+            await LoadImage();
         }
 
         #endregion
@@ -126,6 +144,28 @@ namespace Warlord.ViewModel.Detail
             vehicleModel = new VehicleModelWrapper(model);
         }
 
+        private async Task LoadImage()
+        {
+            if (!string.IsNullOrEmpty(Vehicle.Filename)
+                && File.Exists(Vehicle.Filename))
+            {
+                Uri uri = new Uri(Vehicle.Filename);
+                BitmapImage bitmapImage = new BitmapImage();
+
+                bitmapImage.BeginInit();
+                bitmapImage.UriSource = uri;
+                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                bitmapImage.EndInit();
+
+                Image = bitmapImage;
+            }
+            else
+            {
+                await MessageService.ShowInfoDialog("Error during image loading. Default image loaded instead.");
+                Image = new BitmapImage(new Uri("pack://application:,,,/Resources/warlord_logo_light.png"));
+            }
+        }
+
         private async Task<Vehicle> LoadVehicle(int id)
         {
             var vehicle = await vehicleRepository.GetByIdAsync(id);
@@ -135,23 +175,23 @@ namespace Warlord.ViewModel.Detail
 
         private void SetTitle()
         {
-            Title = $"{vehicleModel.Name} {Vehicle.Price}€";
+            Title = $"{VehicleModel.Name} {Vehicle.Price}€";
         }
 
         #endregion
 
-        #region Event Subscriptions
+        #region Event-related
 
         protected override async void OnDeleteExecute()
         {
             if (await vehicleRepository.HasOrderAsync(Vehicle.Id))
             {
-                MessageService.ShowInfoDialog(
+                await MessageService.ShowInfoDialog(
                     $"An order includes {Title} and therefore this entity cannot be deleted.");
                 return;
             }
 
-            bool result = MessageService.ShowConfirmDialog(
+            bool result = await MessageService.ShowConfirmDialog(
                 $"Do you wish to delete the vehicle {Title}?");
             if (result)
             {
@@ -164,6 +204,7 @@ namespace Warlord.ViewModel.Detail
         protected override bool OnSaveCanExecute()
         {
             return Vehicle != null
+                   && Vehicle.Model.Order == null
                    && !Vehicle.HasErrors
                    && HasChanges;
         }

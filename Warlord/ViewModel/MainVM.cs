@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -40,11 +41,11 @@ namespace Warlord.ViewModel
             DetailVMs = new ObservableCollection<IDetailVM>();
 
             this.eventAggregator = eventAggregator;
-            this.eventAggregator.GetEvent<AfterNewVehicleDetailOpenedEvent>().Subscribe(AfterNewVehicleDetailOpened);
-            this.eventAggregator.GetEvent<AfterNewOrderDetailOpenedEvent>().Subscribe(AFterNewOrderDetailOpened);
+            this.eventAggregator.GetEvent<OnNewDependantDetailOpenedEvent>().Subscribe(OnNewDependantDetailOpened);
             this.eventAggregator.GetEvent<AfterDetailOpenedEvent>().Subscribe(AfterDetailOpened);
             this.eventAggregator.GetEvent<AfterDetailDeletedEvent>().Subscribe(AfterDetailDeleted);
             this.eventAggregator.GetEvent<AfterDetailClosedEvent>().Subscribe(AfterDetailClosed);
+            this.eventAggregator.GetEvent<AfterDetailSavedEvent>().Subscribe(AfterDetailSaved);
 
             CreateNewDetailViewCommand = new DelegateCommand<Type>(OnCreateNewDetailExecute);
             OpenSingleDetailViewCommand = new DelegateCommand<Type>(OnOpenSingleDetailViewExecute);
@@ -174,7 +175,7 @@ namespace Warlord.ViewModel
                 }
                 catch
                 {
-                    messageService.ShowInfoDialog("Could not load the entity.");
+                    await messageService.ShowInfoDialog("Could not load the entity.");
                     //await SelectedNavigationVM.LoadAsync();
                     return;
                 }
@@ -185,64 +186,56 @@ namespace Warlord.ViewModel
             SelectedDetailVM = detailViewModel;
         }
 
-        private async void AfterNewVehicleDetailOpened(AfterNewVehicleDetailOpenedEventArgs args)
+        private async void OnNewDependantDetailOpened(OnNewDependantDetailOpenedEventArgs args)
         {
             args.Id = nextNewItemId--;
             var detailViewModel = DetailVMs
                 .SingleOrDefault(vm => vm.Id == args.Id
                                        && vm.GetType().Name == args.ViewModelName);
 
+
             if (detailViewModel == null)
             {
-                detailViewModel = detailVMCreator[args.ViewModelName];
+                switch (args.ViewModelName)
+                {
+                    case nameof(VehicleDetailVM):
+                    {
+                        detailViewModel = detailVMCreator[args.ViewModelName];
 
-                ((VehicleDetailVM) detailViewModel).VehicleModelId = args.VehicleModelId;
-                await detailViewModel.LoadAsync(args.Id);
+                        ((VehicleDetailVM)detailViewModel).VehicleModelId = args.DependantOnId;
+                        await detailViewModel.LoadAsync(args.Id);
 
-                DetailVMs.Add(detailViewModel);
+                        DetailVMs.Add(detailViewModel);
+                        break;
+                    }
+
+                    case nameof(OrderDetailVM):
+                    {
+                        detailViewModel = detailVMCreator[args.ViewModelName];
+
+                        ((OrderDetailVM)detailViewModel).CustomerId = args.DependantOnId;
+                        await detailViewModel.LoadAsync(args.Id);
+
+                        DetailVMs.Add(detailViewModel);
+                        break;
+                    }
+                }
+
             }
 
             SelectedDetailVM = detailViewModel;
         }
 
-        private async void AfterNewVehicleModelDetailOpened(AfterNewVehicleDetailOpenedEventArgs args)
+        protected void AfterDetailSaved(AfterDetailSavedEventArgs args)
         {
-            args.Id = nextNewItemId--;
-            var detailViewModel = DetailVMs
-                .SingleOrDefault(vm => vm.Id == args.Id
-                                       && vm.GetType().Name == args.ViewModelName);
-
-            if (detailViewModel == null)
-            {
-                detailViewModel = detailVMCreator[args.ViewModelName];
-
-                ((VehicleDetailVM) detailViewModel).VehicleModelId = args.VehicleModelId;
-                await detailViewModel.LoadAsync(args.Id);
-
-                DetailVMs.Add(detailViewModel);
-            }
-
-            SelectedDetailVM = detailViewModel;
-        }
-
-        private async void AFterNewOrderDetailOpened(AfterNewOrderDetailOpenedEventArgs args)
-        {
-            args.Id = nextNewItemId--;
-            var detailViewModel = DetailVMs
-                .SingleOrDefault(vm => vm.Id == args.Id
-                                       && vm.GetType().Name == args.ViewModelName);
-
-            if (detailViewModel == null)
-            {
-                detailViewModel = detailVMCreator[args.ViewModelName];
-
-                ((OrderDetailVM) detailViewModel).CustomerId = args.CustomerId;
-                await detailViewModel.LoadAsync(args.Id);
-
-                DetailVMs.Add(detailViewModel);
-            }
-
-            SelectedDetailVM = detailViewModel;
+            // TODO
+            //if (args.ViewModelName == nameof(VehicleDetailVM))
+            //{
+            //    var detailViewModel = DetailVMs
+            //        .SingleOrDefault(vm => vm.Id == args.Id
+            //                               && vm.GetType().Name == args.ViewModelName);
+            //    detailViewModel?.LoadAsync(args.Id);
+            //}
         }
 
         #endregion

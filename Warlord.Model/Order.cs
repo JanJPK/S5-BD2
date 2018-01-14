@@ -33,7 +33,7 @@ namespace Warlord.Model
         public int Id { get; set; }
 
         [Required]
-        public float TotalPrice { get; set; }
+        public int TotalPrice { get; set; }
 
         public ICollection<Vehicle> Vehicles { get; set; }
 

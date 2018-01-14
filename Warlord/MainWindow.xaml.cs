@@ -1,6 +1,8 @@
 ﻿using System.Globalization;
 using System.Threading;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 using MahApps.Metro.Controls;
 using Warlord.ViewModel;
 
@@ -26,15 +28,21 @@ namespace Warlord
             this.viewModel = viewModel;
             DataContext = this.viewModel;
             //Loaded += MainWindow_Loaded;
+            UIScaleSlider.MouseDoubleClick += new MouseButtonEventHandler(RestoreScalingFactor);
         }
 
         #endregion
 
         #region Methods
 
-        private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        //private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        //{
+        //    //await viewModel.LoadAsync();
+        //}
+
+        void RestoreScalingFactor(object sender, MouseButtonEventArgs args)
         {
-            //await viewModel.LoadAsync();
+            ((Slider) sender).Value = 1.0;
         }
 
         #endregion

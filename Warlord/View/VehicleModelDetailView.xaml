@@ -8,94 +8,116 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="50" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="100" />
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" MinWidth="200" />
-            <ColumnDefinition Width="100" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
-        <Label Grid.Row="0" Grid.Column="0"
-               Content="Id" />
-        <TextBox Grid.Row="0" Grid.Column="1"
-                 Text="{Binding VehicleModel.Id, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                 IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}" />
+        <!-- Vehicle information -->
+        <GroupBox Grid.Row="0" Grid.Column="0"
+                  Header="Vehicle model information">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
 
-        <Label Grid.Row="1" Grid.Column="0"
-               Content="Name" />
-        <TextBox Grid.Row="1" Grid.Column="1"
-                 Text="{Binding VehicleModel.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                 IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}" />
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" MinWidth="200" />
+                </Grid.ColumnDefinitions>
 
-        <Label Grid.Row="2" Grid.Column="0"
-               Content="Manufacturer" />
-        <ComboBox Grid.Row="2" Grid.Column="1"
-                  ItemsSource="{Binding Manufacturers}"
-                  DisplayMemberPath="DisplayMember"
-                  SelectedValuePath="Id"
-                  SelectedValue="{Binding VehicleModel.ManufacturerId, Mode=TwoWay}"
-                  IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}" />
+                <Label Grid.Row="0" Grid.Column="0"
+                       Content="Id" />
+                <TextBox Grid.Row="0" Grid.Column="1"
+                         Text="{Binding VehicleModel.Id, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                         IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}" />
+
+                <Label Grid.Row="1" Grid.Column="0"
+                       Content="Name" />
+                <TextBox Grid.Row="1" Grid.Column="1"
+                         Text="{Binding VehicleModel.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}" />
+
+                <Label Grid.Row="2" Grid.Column="0"
+                       Content="Manufacturer" />
+                <ComboBox Grid.Row="2" Grid.Column="1"
+                          ItemsSource="{Binding Manufacturers}"
+                          DisplayMemberPath="DisplayMember"
+                          SelectedValuePath="Id"
+                          SelectedValue="{Binding VehicleModel.ManufacturerId, Mode=TwoWay}"
+                          IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}" />
 
 
-        <Label Grid.Row="3" Grid.Column="0"
-               Content="Main armament" />
-        <TextBox Grid.Row="3" Grid.Column="1"
-                 Text="{Binding VehicleModel.MainArmament, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                 IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}" />
+                <Label Grid.Row="3" Grid.Column="0"
+                       Content="Main armament" />
+                <TextBox Grid.Row="3" Grid.Column="1"
+                         Text="{Binding VehicleModel.MainArmament, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}" />
 
-        <Label Grid.Row="4" Grid.Column="0"
-               Content="Secondary armament" />
-        <TextBox Grid.Row="4" Grid.Column="1"
-                 Text="{Binding VehicleModel.SecondaryArmament, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                 IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}" />
+                <Label Grid.Row="4" Grid.Column="0"
+                       Content="Secondary armament" />
+                <TextBox Grid.Row="4" Grid.Column="1"
+                         Text="{Binding VehicleModel.SecondaryArmament, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}" />
 
-        <Label Grid.Row="5" Grid.Column="0"
-               Content="Crew" />
-        <TextBox Grid.Row="5" Grid.Column="1"
-                 Text="{Binding VehicleModel.Crew, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                 IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}" />
+                <Label Grid.Row="5" Grid.Column="0"
+                       Content="Crew" />
+                <TextBox Grid.Row="5" Grid.Column="1"
+                         Text="{Binding VehicleModel.Crew, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}" />
 
-        <Label Grid.Row="6" Grid.Column="0"
-               Content="Engine" />
-        <TextBox Grid.Row="6" Grid.Column="1"
-                 Text="{Binding VehicleModel.Engine, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                 IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}" />
+                <Label Grid.Row="6" Grid.Column="0"
+                       Content="Engine" />
+                <TextBox Grid.Row="6" Grid.Column="1"
+                         Text="{Binding VehicleModel.Engine, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}" />
 
-        <Label Grid.Row="7" Grid.Column="0"
-               Content="Engine power" />
-        <TextBox Grid.Row="7" Grid.Column="1"
-                 Text="{Binding VehicleModel.EnginePower, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                 IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}" />
+                <Label Grid.Row="7" Grid.Column="0"
+                       Content="Engine power" />
+                <TextBox Grid.Row="7" Grid.Column="1"
+                         Text="{Binding VehicleModel.EnginePower, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}" />
 
-        <Label Grid.Row="8" Grid.Column="0"
-               Content="Weight" />
-        <TextBox Grid.Row="8" Grid.Column="1"
-                 Text="{Binding VehicleModel.Weight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                 IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}" />
-
-        <StackPanel Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="3"
+                <Label Grid.Row="8" Grid.Column="0"
+                       Content="Weight" />
+                <TextBox Grid.Row="8" Grid.Column="1"
+                         Text="{Binding VehicleModel.Weight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}" />
+            </Grid>
+        </GroupBox>
+        
+        <!-- Actions -->
+        <StackPanel Grid.Row="0" Grid.Column="1">
+            <GroupBox Header="Entity management"
+                      Visibility="{Binding UserPrivilege.LoggedIn, Converter={StaticResource BooleanToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}">
+                <StackPanel
                     Orientation="Horizontal">
-            <Button Content="Save" Width="125"
-                    Command="{Binding SaveCommand}"
-                    Visibility="{Binding UserPrivilege.LoggedIn, Converter={StaticResource BooleanToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}" />
-            <Button Content="Delete" Width="125"
-                    Command="{Binding DeleteCommand}"
-                    Visibility="{Binding UserPrivilege.LoggedIn, Converter={StaticResource BooleanToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}" />
-            <Button Content="New vehicle" Width="125"
-                    Command="{Binding CreateNewVehicleCommand}"
-                    Visibility="{Binding UserPrivilege.LoggedIn, Converter={StaticResource BooleanToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}" />
+                    <Button Content="Save" Width="125"
+                            Command="{Binding SaveCommand}"/>
+                    <Button Content="Delete" Width="125"
+                            Command="{Binding DeleteCommand}"/>
+                </StackPanel>
+            </GroupBox>
+
+            <GroupBox Header="Vehicle management"
+                      Visibility="{Binding UserPrivilege.LoggedIn, Converter={StaticResource BooleanToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}">
+                <StackPanel>
+                    <Button Content="New vehicle" Width="125"
+                            Command="{Binding CreateNewVehicleCommand}"
+                            Visibility="{Binding UserPrivilege.LoggedIn, Converter={StaticResource BooleanToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+            </GroupBox>
         </StackPanel>
 
     </Grid>

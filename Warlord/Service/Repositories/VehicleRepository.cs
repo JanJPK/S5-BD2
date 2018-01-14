@@ -1,4 +1,5 @@
-﻿using System.Data.Entity;
+﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using Warlord.DataAccess;
@@ -23,13 +24,18 @@ namespace Warlord.Service.Repositories
             return await Context.Vehicles
                 .Include(v => v.VehicleModel)
                 .Include(v => v.Order)
-                .SingleAsync(v => v.Id == id);
+                .SingleOrDefaultAsync(v => v.Id == id);
         }
 
         public async Task<bool> HasOrderAsync(int id)
         {
             return await Context.Orders.AsNoTracking()
                 .AnyAsync(o => o.Vehicles.Any(v => v.Id == id));
+        }
+
+        public async Task<IEnumerable<Vehicle>> GetAllByOrderAsync(int id)
+        {
+            return await Context.Set<Vehicle>().Where(v => v.OrderId == id).ToListAsync();
         }
 
         #endregion

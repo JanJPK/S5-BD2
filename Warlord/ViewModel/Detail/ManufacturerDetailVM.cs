@@ -21,7 +21,8 @@ namespace Warlord.ViewModel.Detail
 
         #region Constructors and Destructors
 
-        public ManufacturerDetailVM(IEventAggregator eventAggregator, IMessageService messageService, IUserPrivilege userPrivilege,
+        public ManufacturerDetailVM(IEventAggregator eventAggregator, IMessageService messageService,
+            IUserPrivilege userPrivilege,
             IManufacturerRepository manufacturerRepository)
             : base(eventAggregator, messageService, userPrivilege)
         {
@@ -60,6 +61,13 @@ namespace Warlord.ViewModel.Detail
         #endregion
 
         #region Methods
+
+        private void AfterSaveAction()
+        {
+            HasChanges = manufacturerRepository.HasChanges();
+            Id = manufacturer.Id;
+            RaiseDetailSavedEvent(Manufacturer.Id, $"{Title}");
+        }
 
         private Manufacturer CreateNewManufacturer()
         {
@@ -106,19 +114,19 @@ namespace Warlord.ViewModel.Detail
 
         #endregion
 
-        #region Event Subscriptions
+        #region Event-related
 
         protected override async void OnDeleteExecute()
         {
             if (await manufacturerRepository.HasVehicleModelsAsync(Manufacturer.Id))
             {
-                MessageService.ShowInfoDialog(
+                await MessageService.ShowInfoDialog(
                     $"Vehicle models of {Manufacturer.ShortName} {Manufacturer.FullName} are currently up for sale and therefore this entity cannot be deleted.");
                 return;
             }
 
-            bool result = MessageService.ShowConfirmDialog(
-                    $"Do you wish to delete the manufacturer {Manufacturer.ShortName} {Manufacturer.FullName}?");
+            bool result = await MessageService.ShowConfirmDialog(
+                $"Do you wish to delete the manufacturer {Manufacturer.ShortName} {Manufacturer.FullName}?");
             if (result)
             {
                 manufacturerRepository.Remove(Manufacturer.Model);
@@ -138,13 +146,6 @@ namespace Warlord.ViewModel.Detail
         {
             await SaveWithOptimisticConcurrencyAsync(manufacturerRepository.SaveAsync);
             AfterSaveAction();
-        }
-
-        private void AfterSaveAction()
-        {
-            HasChanges = manufacturerRepository.HasChanges();
-            Id = manufacturer.Id;
-            RaiseDetailSavedEvent(Manufacturer.Id, $"{Title}");
         }
 
         #endregion
