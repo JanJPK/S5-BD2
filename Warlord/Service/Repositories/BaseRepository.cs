@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Data.Entity;
+using System.Linq;
 using System.Threading.Tasks;
+using Warlord.Model;
 
 namespace Warlord.Service.Repositories
 {
@@ -9,7 +11,7 @@ namespace Warlord.Service.Repositories
     /// </summary>
     /// <typeparam name="TEntity">Repository type.</typeparam>
     /// <typeparam name="TContext">Database context.</typeparam>
-    public class BaseRepository<TEntity, TContext> : IBaseRepository<TEntity>
+    public abstract class BaseRepository<TEntity, TContext> : IBaseRepository<TEntity>
         where TEntity : class
         where TContext : DbContext
     {
@@ -59,6 +61,8 @@ namespace Warlord.Service.Repositories
         {
             await Context.SaveChangesAsync();
         }
+
+        public abstract Task ReloadAsync(int id);
 
         #endregion
     }

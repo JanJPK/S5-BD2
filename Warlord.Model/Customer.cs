@@ -18,7 +18,6 @@ namespace Warlord.Model
         #region Public Properties
 
         [Required]
-        [StringLength(50)]
         public string Address { get; set; }
 
         [Required]
@@ -32,14 +31,13 @@ namespace Warlord.Model
         [Key]
         public int Id { get; set; }
 
-
         [Required]
-        [StringLength(50)]
         public string Name { get; set; }
 
         public ICollection<Order> Orders { get; set; }
 
         [Phone]
+        [StringLength(20)]
         public string Phone { get; set; }
 
         [StringLength(50)]

@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Prism.Events;
-using Warlord.Event;
 using Warlord.Properties;
 
 namespace Warlord.Service
@@ -10,18 +9,16 @@ namespace Warlord.Service
     {
         #region Fields
 
-        private readonly IEventAggregator eventAggregator;
         private bool loggedIn;
+        private bool loggedOut;
 
         #endregion
 
         #region Constructors and Destructors
 
-        public UserPrivilege(IEventAggregator eventAggregator)
+        public UserPrivilege()
         {
-            this.eventAggregator = eventAggregator;
-            this.eventAggregator.GetEvent<OnUserLoggedInEvent>().Subscribe(UserLoggedIn);
-            this.eventAggregator.GetEvent<OnUserLoggedOutEvent>().Subscribe(UserLoggedOut);
+            loggedOut = true;
         }
 
         #endregion
@@ -33,39 +30,39 @@ namespace Warlord.Service
             get => loggedIn;
             set
             {
-                loggedIn = value;
-                //PublishEvent();
+                loggedIn = value;                
+                OnPropertyChanged();
+            }
+        }
+
+        public bool LoggedOut
+        {
+            get => loggedOut;
+            set
+            {
+                loggedOut = value;                
                 OnPropertyChanged();
             }
         }
 
         #endregion
 
-        #region Methods
+        #region Public Methods and Operators
 
-        private void PublishEvent()
-        {
-            if (LoggedIn)
-            {
-                eventAggregator.GetEvent<OnUserLoggedInEvent>().Publish();
-            }
-            else
-            {
-                eventAggregator.GetEvent<OnUserLoggedOutEvent>().Publish();
-            }
-        }
-
-        private void UserLoggedIn()
+        public void LogIn()
         {
             LoggedIn = true;
+            LoggedOut = false;
         }
 
-        private void UserLoggedOut()
+        public void LogOut()
         {
             LoggedIn = false;
+            LoggedOut = true;
         }
 
         #endregion
+
 
         #region INotifyPropertyChanged
 

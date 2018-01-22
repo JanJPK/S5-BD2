@@ -52,8 +52,8 @@ namespace Warlord.ViewModel.Detail.Browse
 
         private void OnOpenDetailViewExecute()
         {
-            eventAggregator.GetEvent<AfterDetailOpenedEvent>().Publish(
-                new AfterDetailOpenedEventArgs
+            eventAggregator.GetEvent<OnDetailViewOpenedEvent>().Publish(
+                new OnDetailViewOpenedEventArgs
                 {
                     Id = Id,
                     ViewModelName = DetailViewModelName

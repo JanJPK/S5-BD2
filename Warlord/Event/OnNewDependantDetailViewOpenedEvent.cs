@@ -2,11 +2,11 @@
 
 namespace Warlord.Event
 {
-    public class OnNewDependantDetailOpenedEvent : PubSubEvent<OnNewDependantDetailOpenedEventArgs>
+    public class OnNewDependantDetailViewOpenedEvent : PubSubEvent<OnNewDependantDetailViewOpenedEventArgs>
     {
     }
 
-    public class OnNewDependantDetailOpenedEventArgs : AfterDetailOpenedEventArgs
+    public class OnNewDependantDetailViewOpenedEventArgs : OnDetailViewOpenedEventArgs
     {
         #region Public Properties
 

@@ -1,4 +1,5 @@
 ﻿using System.Data.Entity;
+using System.Linq;
 using System.Threading.Tasks;
 using Warlord.DataAccess;
 using Warlord.Model;
@@ -22,6 +23,16 @@ namespace Warlord.Service.Repositories
             return await Context.Customers
                 .Include(c => c.Orders)
                 .SingleAsync(c => c.Id == id);
+        }
+
+        public override async Task ReloadAsync(int id)
+        {
+            var dbEntityEntry = Context.ChangeTracker.Entries<Customer>()
+                .SingleOrDefault(db => db.Entity.Id == id);
+            if (dbEntityEntry != null)
+            {
+                await dbEntityEntry.ReloadAsync();
+            }
         }
 
         public async Task<bool> HasOrdersAsync(int id)

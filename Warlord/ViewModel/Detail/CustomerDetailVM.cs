@@ -7,7 +7,8 @@ using Warlord.Model;
 using Warlord.Service;
 using Warlord.Service.Message;
 using Warlord.Service.Repositories;
-using Warlord.Wrappers;
+using Warlord.ViewModel.Detail.Browse;
+using Warlord.Wrapper;
 
 namespace Warlord.ViewModel.Detail
 {
@@ -23,13 +24,16 @@ namespace Warlord.ViewModel.Detail
 
         #region Constructors and Destructors
 
-        public CustomerDetailVM(IEventAggregator eventAggregator, IMessageService messageService, IUserPrivilege userPrivilege,
+        public CustomerDetailVM(IEventAggregator eventAggregator, IMessageService messageService,
+            IUserPrivilege userPrivilege,
             ICustomerRepository customerRepository)
             : base(eventAggregator, messageService, userPrivilege)
         {
             this.customerRepository = customerRepository;
 
             CreateNewOrderCommand = new DelegateCommand(OnCreateNewOrderExecute, OnCreateNewOrderCanExecute);
+            OpenBrowseViewWithChildrenCommand =
+                new DelegateCommand(OpenBrowseViewWithChildrenExecute, OpenBrowseViewWithChildrenCanExecute);
         }
 
         #endregion
@@ -47,6 +51,8 @@ namespace Warlord.ViewModel.Detail
                 OnPropertyChanged();
             }
         }
+
+        public ICommand OpenBrowseViewWithChildrenCommand { get; }
 
         #endregion
 
@@ -76,12 +82,13 @@ namespace Warlord.ViewModel.Detail
                 return;
             }
 
-            bool result = await MessageService.ShowConfirmDialog($"Do you wish to delete the customer {Customer.Name}?");
+            bool result =
+                await MessageService.ShowConfirmDialog($"Do you wish to delete the customer {Customer.Name}?");
             if (result)
             {
                 customerRepository.Remove(Customer.Model);
                 await customerRepository.SaveAsync();
-                RaiseDetailDeletedEvent(Customer.Id);
+                RaiseDetailViewDeletedEvent(Customer.Id);
             }
         }
 
@@ -95,16 +102,14 @@ namespace Warlord.ViewModel.Detail
         protected override async void OnSaveExecute()
         {
             await SaveWithOptimisticConcurrencyAsync(customerRepository.SaveAsync);
-            SetTitle();
-            AfterSaveAction();
-            await LoadAsync(Customer.Id);
         }
 
-        private void AfterSaveAction()
+        protected override async void AfterSaveAction()
         {
             HasChanges = customerRepository.HasChanges();
             Id = customer.Id;
-            RaiseDetailSavedEvent(Customer.Id, Title);
+            await LoadAsync(Id);
+            RaiseDetailViewSavedEvent(Customer.Id, Title);
         }
 
         private Customer CreateNewCustomer()
@@ -156,11 +161,27 @@ namespace Warlord.ViewModel.Detail
 
         private void OnCreateNewOrderExecute()
         {
-            EventAggregator.GetEvent<OnNewDependantDetailOpenedEvent>().Publish(
-                new OnNewDependantDetailOpenedEventArgs
+            EventAggregator.GetEvent<OnNewDependantDetailViewOpenedEvent>().Publish(
+                new OnNewDependantDetailViewOpenedEventArgs
                 {
                     DependantOnId = Customer.Id,
                     ViewModelName = nameof(OrderDetailVM)
+                });
+        }
+
+        private bool OpenBrowseViewWithChildrenCanExecute()
+        {
+            return Customer.Id > 0 && !HasChanges;
+        }
+
+        private void OpenBrowseViewWithChildrenExecute()
+        {
+            EventAggregator.GetEvent<OnBrowseViewFilteredOpenedEvent>()
+                .Publish(new OnBrowseViewFilteredOpenedEventArgs
+                {
+                    Id = -1,
+                    ViewModelName = nameof(OrderBrowseVM),
+                    FilterDisplayMember = Customer.Name
                 });
         }
 

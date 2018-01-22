@@ -58,7 +58,6 @@
                           SelectedValue="{Binding VehicleModel.ManufacturerId, Mode=TwoWay}"
                           IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}" />
 
-
                 <Label Grid.Row="3" Grid.Column="0"
                        Content="Main armament" />
                 <TextBox Grid.Row="3" Grid.Column="1"
@@ -84,13 +83,13 @@
                          IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}" />
 
                 <Label Grid.Row="7" Grid.Column="0"
-                       Content="Engine power" />
+                       Content="Engine power [hp]" />
                 <TextBox Grid.Row="7" Grid.Column="1"
                          Text="{Binding VehicleModel.EnginePower, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}" />
 
                 <Label Grid.Row="8" Grid.Column="0"
-                       Content="Weight" />
+                       Content="Weight [t]" />
                 <TextBox Grid.Row="8" Grid.Column="1"
                          Text="{Binding VehicleModel.Weight, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                          IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}" />
@@ -99,6 +98,13 @@
         
         <!-- Actions -->
         <StackPanel Grid.Row="0" Grid.Column="1">
+            <GroupBox Header="Vehicles of this type">
+                <StackPanel>
+                    <Button Content="Show all" Width="125"
+                            Command="{Binding OpenBrowseViewWithChildrenCommand}"/>
+                </StackPanel>
+            </GroupBox>
+            
             <GroupBox Header="Entity management"
                       Visibility="{Binding UserPrivilege.LoggedIn, Converter={StaticResource BooleanToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}">
                 <StackPanel

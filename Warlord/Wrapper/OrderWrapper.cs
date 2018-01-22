@@ -1,7 +1,7 @@
 ﻿using System;
 using Warlord.Model;
 
-namespace Warlord.Wrappers
+namespace Warlord.Wrapper
 {
     public class OrderWrapper : BaseWrapper<Order>
     {

@@ -2,17 +2,17 @@
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
 
-namespace Warlord.Wrappers
+namespace Warlord.Wrapper
 {
     /// <summary>
     ///     Wrapper for Warlord.Model classes.
     /// </summary>
     /// <typeparam name="T">Model.</typeparam>
-    public class BaseWrapper<T> : BaseNotifyDataErrorInfo
+    public abstract class BaseWrapper<T> : BaseNotifyDataErrorInfo
     {
         #region Constructors and Destructors
 
-        public BaseWrapper(T model)
+        protected BaseWrapper(T model)
         {
             Model = model;
         }

@@ -5,11 +5,11 @@ namespace Warlord.Event
     /// <summary>
     ///     Published when entity is saved using view.
     /// </summary>
-    public class AfterDetailSavedEvent : PubSubEvent<AfterDetailSavedEventArgs>
+    public class AfterDetailViewSavedEvent : PubSubEvent<AfterDetailViewSavedEventArgs>
     {
     }
 
-    public class AfterDetailSavedEventArgs
+    public class AfterDetailViewSavedEventArgs
     {
         #region Public Properties
 

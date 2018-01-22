@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Warlord.Model;
 
-namespace Warlord.Wrappers
+namespace Warlord.Wrapper
 {
     public class VehicleWrapper : BaseWrapper<Vehicle>
     {
@@ -34,7 +34,7 @@ namespace Warlord.Wrappers
             set => SetValue(value);
         }
 
-        public string Filename
+        public string Imagepath
         {
             get => GetValue<string>();
             set => SetValue(value);
@@ -55,6 +55,17 @@ namespace Warlord.Wrappers
         }
 
         public bool IsAvailable => Model.Order == null ? true : false;
+
+        public string IsAvailableString
+        {
+            get
+            {
+                if (Model.Order == null)
+                    return "This vehicle is available for sale.";
+                return "This vehicle is not available for sale.";
+
+            }
+        }
 
         #endregion
 

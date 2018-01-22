@@ -31,8 +31,8 @@ namespace Warlord.ViewModel.Detail.Browse
             BrowseItems = new ObservableCollection<BrowseItem>();
             BrowseItemsFiltered = BrowseItems;
 
-            EventAggregator.GetEvent<AfterDetailSavedEvent>().Subscribe(AfterDetailSaved);
-            EventAggregator.GetEvent<AfterDetailDeletedEvent>().Subscribe(AfterDetailDeleted);
+            EventAggregator.GetEvent<AfterDetailViewSavedEvent>().Subscribe(AfterDetailSaved);
+            EventAggregator.GetEvent<AfterDetailViewDeletedEvent>().Subscribe(AfterDetailDeleted);
 
             FilterByDisplayMemberCommand = new DelegateCommand(FilterByDisplayMember);
             FilterByIdCommand = new DelegateCommand(FilterById);
@@ -95,7 +95,7 @@ namespace Warlord.ViewModel.Detail.Browse
 
         #region Methods
 
-        protected void FilterByDisplayMember()
+        public void FilterByDisplayMember()
         {
             if (FilterDisplayMember == "")
             {
@@ -107,7 +107,7 @@ namespace Warlord.ViewModel.Detail.Browse
                 .Where(b => b.DisplayMember.ToLower().Contains(FilterDisplayMember.ToLower())).ToList());
         }
 
-        protected void FilterById()
+        public void FilterById()
         {
             if (FilterId == "")
             {
@@ -123,7 +123,7 @@ namespace Warlord.ViewModel.Detail.Browse
             }
         }
 
-        protected void FilterReset()
+        public void FilterReset()
         {
             BrowseItemsFiltered = BrowseItems;
         }
@@ -132,10 +132,10 @@ namespace Warlord.ViewModel.Detail.Browse
 
         #region Event-related
 
-        protected abstract void AfterDetailDeleted(AfterDetailDeletedEventArgs args);
+        protected abstract void AfterDetailDeleted(AfterDetailViewDeletedEventArgs args);
 
         protected void AfterDetailDeleted(ObservableCollection<BrowseItem> items,
-            AfterDetailDeletedEventArgs args)
+            AfterDetailViewDeletedEventArgs args)
         {
             var item = items.SingleOrDefault(f => f.Id == args.Id);
             if (item != null)
@@ -144,20 +144,20 @@ namespace Warlord.ViewModel.Detail.Browse
             }
         }
 
-        protected abstract void AfterDetailSaved(AfterDetailSavedEventArgs args);
+        protected abstract void AfterDetailSaved(AfterDetailViewSavedEventArgs args);
 
         protected void AfterDetailSaved(ObservableCollection<BrowseItem> items,
-            AfterDetailSavedEventArgs args)
+            AfterDetailViewSavedEventArgs args)
         {
-            var lookupItem = items.SingleOrDefault(l => l.Id == args.Id);
-            if (lookupItem == null)
+            var browseItem = items.SingleOrDefault(l => l.Id == args.Id);
+            if (browseItem == null)
             {
                 items.Add(new BrowseItem(args.Id, args.DisplayMember, EventAggregator,
                     args.ViewModelName));
             }
             else
             {
-                lookupItem.DisplayMember = args.DisplayMember;
+                browseItem.DisplayMember = args.DisplayMember;
             }
         }
 
@@ -178,6 +178,11 @@ namespace Warlord.ViewModel.Detail.Browse
         protected override void OnSaveExecute()
         {
             throw new NotImplementedException();
+        }
+
+        protected override void AfterSaveAction()
+        {
+            
         }
 
         #endregion

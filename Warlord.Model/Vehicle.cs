@@ -15,7 +15,7 @@ namespace Warlord.Model
         [Required]
         public DateTime DateOfManufacture { get; set; }
 
-        public string Filename { get; set; }
+        public string Imagepath { get; set; }
 
         [Key]
         public int Id { get; set; }

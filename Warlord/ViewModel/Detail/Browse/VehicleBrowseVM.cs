@@ -51,7 +51,7 @@ namespace Warlord.ViewModel.Detail.Browse
 
         #region Event-related
 
-        protected override void AfterDetailDeleted(AfterDetailDeletedEventArgs args)
+        protected override void AfterDetailDeleted(AfterDetailViewDeletedEventArgs args)
         {
             if (args.ViewModelName == nameof(VehicleDetailVM))
             {
@@ -59,11 +59,15 @@ namespace Warlord.ViewModel.Detail.Browse
             }
         }
 
-        protected override void AfterDetailSaved(AfterDetailSavedEventArgs args)
+        protected override async void AfterDetailSaved(AfterDetailViewSavedEventArgs args)
         {
             if (args.ViewModelName == nameof(VehicleDetailVM))
             {
                 AfterDetailSaved(BrowseItems, args);
+            }
+            if (args.ViewModelName == nameof(VehicleModelDetailVM))
+            {
+                await LoadAsync(Id);
             }
         }
 

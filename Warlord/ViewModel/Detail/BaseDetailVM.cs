@@ -44,6 +44,10 @@ namespace Warlord.ViewModel.Detail
 
         #region Public Properties
 
+        public ICommand CloseDetailViewCommand { get; }
+
+        public ICommand DeleteCommand { get; }
+
         public bool HasChanges
         {
             get => hasChanges;
@@ -59,6 +63,8 @@ namespace Warlord.ViewModel.Detail
         }
 
         public int Id { get; set; }
+
+        public ICommand SaveCommand { get; }
 
         public string Title
         {
@@ -102,7 +108,7 @@ namespace Warlord.ViewModel.Detail
                 }
             }
 
-            EventAggregator.GetEvent<AfterDetailClosedEvent>()
+            EventAggregator.GetEvent<AfterDetailViewClosedEvent>()
                 .Publish(new AfterDetailClosedEventArgs
                 {
                     Id = Id,
@@ -114,8 +120,37 @@ namespace Warlord.ViewModel.Detail
         protected abstract bool OnSaveCanExecute();
         protected abstract void OnSaveExecute();
 
-        //protected async Task SaveWithOptimisticConcurrencyAsync(Func<Task> saveFunc, Action afterSaveAction)
-        protected async Task SaveWithOptimisticConcurrencyAsync(Func<Task> saveFunc)
+        protected virtual void RaiseCollectionSavedEvent()
+        {
+            EventAggregator.GetEvent<AfterCollectionSavedEvent>()
+                .Publish(new AfterCollectionSavedEventArgs
+                {
+                    ViewModelName = GetType().Name
+                });
+        }
+
+        protected virtual void RaiseDetailViewDeletedEvent(int modelId)
+        {
+            EventAggregator.GetEvent<AfterDetailViewDeletedEvent>()
+                .Publish(new AfterDetailViewDeletedEventArgs
+                {
+                    Id = modelId,
+                    ViewModelName = GetType().Name
+                });
+        }
+
+        protected virtual void RaiseDetailViewSavedEvent(int modelId, string displayMember)
+        {
+            EventAggregator.GetEvent<AfterDetailViewSavedEvent>()
+                .Publish(new AfterDetailViewSavedEventArgs
+                {
+                    Id = modelId,
+                    DisplayMember = displayMember,
+                    ViewModelName = GetType().Name
+                });
+        }
+
+        protected virtual async Task SaveWithOptimisticConcurrencyAsync(Func<Task> saveFunc)
         {
             try
             {
@@ -127,7 +162,7 @@ namespace Warlord.ViewModel.Detail
                 if (databaseValues == null)
                 {
                     await MessageService.ShowInfoDialog("The entity has been deleted by another user.");
-                    RaiseDetailDeletedEvent(Id);
+                    RaiseDetailViewDeletedEvent(Id);
                     return;
                 }
 
@@ -150,53 +185,11 @@ namespace Warlord.ViewModel.Detail
                 }
             }
 
-            //afterSaveAction();
+            AfterSaveAction();
         }
 
         #endregion
 
-        #region Commands
-
-        public ICommand CloseDetailViewCommand { get; }
-
-        public ICommand DeleteCommand { get; }
-
-        public ICommand SaveCommand { get; }
-
-        #endregion
-
-        #region Event Raising
-
-        protected virtual void RaiseDetailDeletedEvent(int modelId)
-        {
-            EventAggregator.GetEvent<AfterDetailDeletedEvent>()
-                .Publish(new AfterDetailDeletedEventArgs
-                {
-                    Id = modelId,
-                    ViewModelName = GetType().Name
-                });
-        }
-
-        protected virtual void RaiseDetailSavedEvent(int modelId, string displayMember)
-        {
-            EventAggregator.GetEvent<AfterDetailSavedEvent>()
-                .Publish(new AfterDetailSavedEventArgs
-                {
-                    Id = modelId,
-                    DisplayMember = displayMember,
-                    ViewModelName = GetType().Name
-                });
-        }
-
-        protected virtual void RaiseCollectionSavedEvent()
-        {
-            EventAggregator.GetEvent<AfterCollectionSavedEvent>()
-                .Publish(new AfterCollectionSavedEventArgs
-                {
-                    ViewModelName = GetType().Name
-                });
-        }
-
-        #endregion
+        protected abstract void AfterSaveAction();
     }
 }

@@ -96,10 +96,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Event\OnNewVehicleDetailOpenedEvent.cs" />
-    <Compile Include="Event\OnNewDependantDetailOpenedEvent.cs" />
-    <Compile Include="Event\OnUserLoggedInEvent.cs" />
-    <Compile Include="Event\OnUserLoggedOutEvent.cs" />
+    <Compile Include="Event\OnBrowseViewFilteredOpenedEvent.cs" />
+    <Compile Include="Event\OnNewDependantDetailViewOpenedEvent.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Service\IUserPrivilege.cs" />
     <Compile Include="Service\Lookups\ICustomerLookupService.cs" />
@@ -171,13 +169,13 @@
     <Compile Include="View\VehicleModelDetailView.xaml.cs">
       <DependentUpon>VehicleModelDetailView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Wrappers\BaseNotifyDataErrorInfo.cs" />
-    <Compile Include="Wrappers\BaseWrapper.cs" />
-    <Compile Include="Wrappers\CustomerWrapper.cs" />
-    <Compile Include="Wrappers\ManufacturerWrapper.cs" />
-    <Compile Include="Wrappers\OrderWrapper.cs" />
-    <Compile Include="Wrappers\VehicleModelWrapper.cs" />
-    <Compile Include="Wrappers\VehicleWrapper.cs" />
+    <Compile Include="Wrapper\BaseNotifyDataErrorInfo.cs" />
+    <Compile Include="Wrapper\BaseWrapper.cs" />
+    <Compile Include="Wrapper\CustomerWrapper.cs" />
+    <Compile Include="Wrapper\ManufacturerWrapper.cs" />
+    <Compile Include="Wrapper\OrderWrapper.cs" />
+    <Compile Include="Wrapper\VehicleModelWrapper.cs" />
+    <Compile Include="Wrapper\VehicleWrapper.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -186,12 +184,11 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Event\AfterBrowseOpenedEvent.cs" />
     <Compile Include="Event\AfterCollectionSavedEvent.cs" />
-    <Compile Include="Event\AfterDetailClosedEvent.cs" />
-    <Compile Include="Event\AfterDetailDeletedEvent.cs" />
-    <Compile Include="Event\AfterDetailOpenedEvent.cs" />
-    <Compile Include="Event\AfterDetailSavedEvent.cs" />
+    <Compile Include="Event\AfterDetailViewClosedEvent.cs" />
+    <Compile Include="Event\AfterDetailViewDeletedEvent.cs" />
+    <Compile Include="Event\OnDetailViewOpenedEvent.cs" />
+    <Compile Include="Event\AfterDetailViewSavedEvent.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

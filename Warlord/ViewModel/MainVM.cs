@@ -1,8 +1,6 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using Autofac.Features.Indexed;
 using Prism.Commands;
@@ -11,6 +9,7 @@ using Warlord.Event;
 using Warlord.Service;
 using Warlord.Service.Message;
 using Warlord.ViewModel.Detail;
+using Warlord.ViewModel.Detail.Browse;
 
 namespace Warlord.ViewModel
 {
@@ -18,12 +17,11 @@ namespace Warlord.ViewModel
     {
         #region Fields
 
+        private readonly IIndex<string, IDetailVM> detailVMCreator;
         private readonly IEventAggregator eventAggregator;
         private readonly IMessageService messageService;
-
         private int nextNewItemId;
-
-        
+        private IDetailVM selectedDetailVM;
 
         #endregion
 
@@ -41,18 +39,15 @@ namespace Warlord.ViewModel
             DetailVMs = new ObservableCollection<IDetailVM>();
 
             this.eventAggregator = eventAggregator;
-            this.eventAggregator.GetEvent<OnNewDependantDetailOpenedEvent>().Subscribe(OnNewDependantDetailOpened);
-            this.eventAggregator.GetEvent<AfterDetailOpenedEvent>().Subscribe(AfterDetailOpened);
-            this.eventAggregator.GetEvent<AfterDetailDeletedEvent>().Subscribe(AfterDetailDeleted);
-            this.eventAggregator.GetEvent<AfterDetailClosedEvent>().Subscribe(AfterDetailClosed);
-            this.eventAggregator.GetEvent<AfterDetailSavedEvent>().Subscribe(AfterDetailSaved);
+            this.eventAggregator.GetEvent<OnNewDependantDetailViewOpenedEvent>().Subscribe(OnNewDependantDetailOpened);
+            this.eventAggregator.GetEvent<OnDetailViewOpenedEvent>().Subscribe(OnDetailViewOpened);
+            this.eventAggregator.GetEvent<OnBrowseViewFilteredOpenedEvent>().Subscribe(OnBrowseViewFilteredOpened);
+            this.eventAggregator.GetEvent<AfterDetailViewDeletedEvent>().Subscribe(AfterDetailViewDeleted);
+            this.eventAggregator.GetEvent<AfterDetailViewClosedEvent>().Subscribe(AfterDetailViewClosed);
 
-            CreateNewDetailViewCommand = new DelegateCommand<Type>(OnCreateNewDetailExecute);
+            CreateNewDetailViewCommand = new DelegateCommand<Type>(OnCreateNewDetailViewExecute);
             OpenSingleDetailViewCommand = new DelegateCommand<Type>(OnOpenSingleDetailViewExecute);
 
-            CreateVehicleModelBrowseView = new DelegateCommand<Type>(OnCreateNewVehicleModelBrowseView);
-
-            // Debug:
             LogInCommand = new DelegateCommand<Type>(LogIn);
             LogOutCommand = new DelegateCommand<Type>(LogOut);
         }
@@ -60,39 +55,6 @@ namespace Warlord.ViewModel
         #endregion
 
         #region Public Properties
-
-        public ICommand CreateVehicleModelBrowseView { get; }
-
-        #endregion
-
-        #region Public Methods and Operators
-
-        public Task LoadAsync()
-        {
-            return null;
-        }
-
-        #endregion
-
-        #region Methods
-
-        private void OnCreateNewVehicleModelBrowseView(Type obj)
-        {
-        }
-
-        #endregion
-
-        #region Detail VM
-
-        #region Fields
-
-        private readonly IIndex<string, IDetailVM> detailVMCreator;
-
-        private IDetailVM selectedDetailVM;
-
-        #endregion
-
-        #region Properties
 
         public ICommand CreateNewDetailViewCommand { get; }
 
@@ -114,52 +76,85 @@ namespace Warlord.ViewModel
 
         #region Methods
 
-        private void OnCreateNewDetailExecute(Type viewModelType)
+        /// <summary>
+        ///     Removes ViewModel from DetailVMs.
+        /// </summary>
+        private void AfterDetailViewClosed(AfterDetailClosedEventArgs args)
+        {
+            RemoveDetailViewModel(args.Id, args.ViewModelName);
+        }
+
+        /// <summary>
+        ///     Removes ViewModel from DetailVMs.
+        /// </summary>
+        private void AfterDetailViewDeleted(AfterDetailViewDeletedEventArgs args)
+        {
+            RemoveDetailViewModel(args.Id, args.ViewModelName);
+        }
+
+        /// <summary>
+        ///     Creates a new browse view with filters applied - for example Vehicle browse view for specific model only.
+        /// </summary>
+        private async void OnBrowseViewFilteredOpened(OnBrowseViewFilteredOpenedEventArgs args)
+        {
+            // Finding view or creating it.
+            var detailViewModel = DetailVMs
+                .SingleOrDefault(vm => vm.Id == args.Id
+                                       && vm.GetType().Name == args.ViewModelName);
+
+            if (detailViewModel == null)
+            {
+                detailViewModel = detailVMCreator[args.ViewModelName];
+                // Checking if its not deleted by other user.
+                try
+                {
+                    await detailViewModel.LoadAsync(args.Id);
+                }
+                catch
+                {
+                    await messageService.ShowInfoDialog("Could not load the entity.");
+                    //await SelectedNavigationVM.LoadAsync();
+                    return;
+                }
+
+                DetailVMs.Add(detailViewModel);
+            }
+
+            // Applying filter.
+            ((BaseBrowseVM) detailViewModel).FilterReset();
+            if (!string.IsNullOrEmpty(args.FilterId))
+            {
+                ((BaseBrowseVM) detailViewModel).FilterId = args.FilterId;
+                ((BaseBrowseVM) detailViewModel).FilterById();
+            }
+            else
+            {
+                ((BaseBrowseVM) detailViewModel).FilterDisplayMember = args.FilterDisplayMember;
+                ((BaseBrowseVM) detailViewModel).FilterByDisplayMember();
+            }
+
+            // Selecting as currently viewed.
+            SelectedDetailVM = detailViewModel;
+        }
+
+        /// <summary>
+        ///     Publishes an event calling for creation of new VM of given type.
+        /// </summary>
+        private void OnCreateNewDetailViewExecute(Type viewModelType)
         {
             //OnOpenDetailView(new OpenDetailViewEventArgs { ViewModelName = nameof(FriendDetailViewModel)});
             // More versatile approach:
-            AfterDetailOpened(new AfterDetailOpenedEventArgs
+            OnDetailViewOpened(new OnDetailViewOpenedEventArgs
             {
                 Id = nextNewItemId--,
                 ViewModelName = viewModelType.Name
             });
         }
 
-        private void OnOpenSingleDetailViewExecute(Type viewModelType)
-        {
-            AfterDetailOpened(new AfterDetailOpenedEventArgs
-            {
-                Id = -1,
-                ViewModelName = viewModelType.Name
-            });
-        }
-
-        private void RemoveDetailViewModel(int id, string viewModelName)
-        {
-            var detailViewModel = DetailVMs
-                .SingleOrDefault(vm => vm.Id == id
-                                       && vm.GetType().Name == viewModelName);
-            if (detailViewModel != null)
-            {
-                DetailVMs.Remove(detailViewModel);
-            }
-        }
-
-        #endregion
-
-        #region Event subscriptions
-
-        private void AfterDetailClosed(AfterDetailClosedEventArgs args)
-        {
-            RemoveDetailViewModel(args.Id, args.ViewModelName);
-        }
-
-        private void AfterDetailDeleted(AfterDetailDeletedEventArgs args)
-        {
-            RemoveDetailViewModel(args.Id, args.ViewModelName);
-        }
-
-        private async void AfterDetailOpened(AfterDetailOpenedEventArgs args)
+        /// <summary>
+        ///     Creates new VM (or selects it if tis already created) then sets it as currently viewed.
+        /// </summary>
+        private async void OnDetailViewOpened(OnDetailViewOpenedEventArgs args)
         {
             var detailViewModel = DetailVMs
                 .SingleOrDefault(vm => vm.Id == args.Id
@@ -186,7 +181,10 @@ namespace Warlord.ViewModel
             SelectedDetailVM = detailViewModel;
         }
 
-        private async void OnNewDependantDetailOpened(OnNewDependantDetailOpenedEventArgs args)
+        /// <summary>
+        ///     Used when new Order or Vehicle is created through button on Customer/VehicleModel Views.
+        /// </summary>
+        private async void OnNewDependantDetailOpened(OnNewDependantDetailViewOpenedEventArgs args)
         {
             args.Id = nextNewItemId--;
             var detailViewModel = DetailVMs
@@ -202,7 +200,7 @@ namespace Warlord.ViewModel
                     {
                         detailViewModel = detailVMCreator[args.ViewModelName];
 
-                        ((VehicleDetailVM)detailViewModel).VehicleModelId = args.DependantOnId;
+                        ((VehicleDetailVM) detailViewModel).VehicleModelId = args.DependantOnId;
                         await detailViewModel.LoadAsync(args.Id);
 
                         DetailVMs.Add(detailViewModel);
@@ -213,37 +211,50 @@ namespace Warlord.ViewModel
                     {
                         detailViewModel = detailVMCreator[args.ViewModelName];
 
-                        ((OrderDetailVM)detailViewModel).CustomerId = args.DependantOnId;
+                        ((OrderDetailVM) detailViewModel).CustomerId = args.DependantOnId;
                         await detailViewModel.LoadAsync(args.Id);
 
                         DetailVMs.Add(detailViewModel);
                         break;
                     }
                 }
-
             }
 
             SelectedDetailVM = detailViewModel;
         }
 
-        protected void AfterDetailSaved(AfterDetailSavedEventArgs args)
+        /// <summary>
+        ///     Publishes an event calling for creation of new VM of given type. Id is -1 => only one instance of this View type
+        ///     might exist at any time.
+        /// </summary>
+        private void OnOpenSingleDetailViewExecute(Type viewModelType)
         {
-            // TODO
-            //if (args.ViewModelName == nameof(VehicleDetailVM))
-            //{
-            //    var detailViewModel = DetailVMs
-            //        .SingleOrDefault(vm => vm.Id == args.Id
-            //                               && vm.GetType().Name == args.ViewModelName);
-            //    detailViewModel?.LoadAsync(args.Id);
-            //}
+            OnDetailViewOpened(new OnDetailViewOpenedEventArgs
+            {
+                Id = -1,
+                ViewModelName = viewModelType.Name
+            });
         }
 
-        #endregion
+        /// <summary>
+        ///     Removes ViewModel from DetailVMs.
+        /// </summary>
+        private void RemoveDetailViewModel(int id, string viewModelName)
+        {
+            var detailViewModel = DetailVMs
+                .SingleOrDefault(vm => vm.Id == id
+                                       && vm.GetType().Name == viewModelName);
+            if (detailViewModel != null)
+            {
+                DetailVMs.Remove(detailViewModel);
+            }
+        }
 
         #endregion
 
         #region Debug-related
 
+        // LogIn system placeholder.
         private IUserPrivilege userPrivilege;
         public IUserPrivilege UserPrivilege
         {
@@ -254,17 +265,18 @@ namespace Warlord.ViewModel
                 OnPropertyChanged();
             }
         }
+
         public ICommand LogInCommand { get; }
         public ICommand LogOutCommand { get; }
 
         private void LogIn(Type obj)
         {
-            eventAggregator.GetEvent<OnUserLoggedInEvent>().Publish();
+            UserPrivilege.LogIn();
         }
 
         private void LogOut(Type obj)
         {
-            eventAggregator.GetEvent<OnUserLoggedOutEvent>().Publish();
+            UserPrivilege.LogOut();
         }
 
         #endregion

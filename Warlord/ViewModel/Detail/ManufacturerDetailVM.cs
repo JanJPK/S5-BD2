@@ -1,11 +1,14 @@
 ﻿using System.Threading.Tasks;
+using System.Windows.Input;
 using Prism.Commands;
 using Prism.Events;
+using Warlord.Event;
 using Warlord.Model;
 using Warlord.Service;
 using Warlord.Service.Message;
 using Warlord.Service.Repositories;
-using Warlord.Wrappers;
+using Warlord.ViewModel.Detail.Browse;
+using Warlord.Wrapper;
 
 namespace Warlord.ViewModel.Detail
 {
@@ -27,6 +30,9 @@ namespace Warlord.ViewModel.Detail
             : base(eventAggregator, messageService, userPrivilege)
         {
             this.manufacturerRepository = manufacturerRepository;
+
+            OpenBrowseViewWithChildrenCommand =
+                new DelegateCommand(OpenBrowseViewWithChildrenExecute, OpenBrowseViewWithChildrenCanExecute);
         }
 
         #endregion
@@ -42,6 +48,8 @@ namespace Warlord.ViewModel.Detail
                 OnPropertyChanged();
             }
         }
+
+        public ICommand OpenBrowseViewWithChildrenCommand { get; }
 
         #endregion
 
@@ -62,11 +70,43 @@ namespace Warlord.ViewModel.Detail
 
         #region Methods
 
-        private void AfterSaveAction()
+        protected override async void OnDeleteExecute()
+        {
+            if (await manufacturerRepository.HasVehicleModelsAsync(Manufacturer.Id))
+            {
+                await MessageService.ShowInfoDialog(
+                    $"Vehicle models of {Manufacturer.ShortName} {Manufacturer.FullName} are currently up for sale and therefore this entity cannot be deleted.");
+                return;
+            }
+
+            bool result = await MessageService.ShowConfirmDialog(
+                $"Do you wish to delete the manufacturer {Manufacturer.ShortName} {Manufacturer.FullName}?");
+            if (result)
+            {
+                manufacturerRepository.Remove(Manufacturer.Model);
+                await manufacturerRepository.SaveAsync();
+                RaiseDetailViewDeletedEvent(Manufacturer.Id);
+            }
+        }
+
+        protected override bool OnSaveCanExecute()
+        {
+            return Manufacturer != null
+                   && !Manufacturer.HasErrors
+                   && HasChanges;
+        }
+
+        protected override async void OnSaveExecute()
+        {
+            await SaveWithOptimisticConcurrencyAsync(manufacturerRepository.SaveAsync);
+        }
+
+        protected override async void AfterSaveAction()
         {
             HasChanges = manufacturerRepository.HasChanges();
             Id = manufacturer.Id;
-            RaiseDetailSavedEvent(Manufacturer.Id, $"{Title}");
+            await LoadAsync(Id);
+            RaiseDetailViewSavedEvent(Manufacturer.Id, Title);
         }
 
         private Manufacturer CreateNewManufacturer()
@@ -107,45 +147,25 @@ namespace Warlord.ViewModel.Detail
             SetTitle();
         }
 
+        private bool OpenBrowseViewWithChildrenCanExecute()
+        {
+            return Manufacturer.Id > 0 && !HasChanges;
+        }
+
+        private void OpenBrowseViewWithChildrenExecute()
+        {
+            EventAggregator.GetEvent<OnBrowseViewFilteredOpenedEvent>()
+                .Publish(new OnBrowseViewFilteredOpenedEventArgs
+                {
+                    Id = -1,
+                    ViewModelName = nameof(VehicleModelBrowseVM),
+                    FilterDisplayMember = Manufacturer.ShortName
+                });
+        }
+
         private void SetTitle()
         {
             Title = $"{manufacturer.ShortName}";
-        }
-
-        #endregion
-
-        #region Event-related
-
-        protected override async void OnDeleteExecute()
-        {
-            if (await manufacturerRepository.HasVehicleModelsAsync(Manufacturer.Id))
-            {
-                await MessageService.ShowInfoDialog(
-                    $"Vehicle models of {Manufacturer.ShortName} {Manufacturer.FullName} are currently up for sale and therefore this entity cannot be deleted.");
-                return;
-            }
-
-            bool result = await MessageService.ShowConfirmDialog(
-                $"Do you wish to delete the manufacturer {Manufacturer.ShortName} {Manufacturer.FullName}?");
-            if (result)
-            {
-                manufacturerRepository.Remove(Manufacturer.Model);
-                await manufacturerRepository.SaveAsync();
-                RaiseDetailDeletedEvent(Manufacturer.Id);
-            }
-        }
-
-        protected override bool OnSaveCanExecute()
-        {
-            return Manufacturer != null
-                   && !Manufacturer.HasErrors
-                   && HasChanges;
-        }
-
-        protected override async void OnSaveExecute()
-        {
-            await SaveWithOptimisticConcurrencyAsync(manufacturerRepository.SaveAsync);
-            AfterSaveAction();
         }
 
         #endregion

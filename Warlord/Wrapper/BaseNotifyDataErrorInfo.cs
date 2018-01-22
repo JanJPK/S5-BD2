@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using Warlord.ViewModel;
 
-namespace Warlord.Wrappers
+namespace Warlord.Wrapper
 {
     /// <summary>
     ///     Allows input validation.

@@ -35,8 +35,9 @@
                 <Label Grid.Row="0" Grid.Column="0"
                        Content="ID" />
                 <TextBox Grid.Row="0" Grid.Column="1"
+                         IsReadOnly="True"
                          Text="{Binding Manufacturer.Id, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                         IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}" />
+                         IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}"/>
 
                 <Label Grid.Row="1" Grid.Column="0"
                        Content="Short name" />
@@ -61,6 +62,13 @@
 
         <!-- Actions -->
         <StackPanel Grid.Row="0" Grid.Column="1">
+            <GroupBox Header="Vehicle models by this manufacturer">
+                <StackPanel>
+                    <Button Content="Show all" Width="125"
+                            Command="{Binding OpenBrowseViewWithChildrenCommand}"/>
+                </StackPanel>
+                
+            </GroupBox>
             <GroupBox Header="Entity management"
                       Visibility="{Binding UserPrivilege.LoggedIn, Converter={StaticResource BooleanToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}">
                 <StackPanel

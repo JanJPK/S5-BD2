@@ -29,31 +29,30 @@
                     </Style>
 
                     <DataTemplate x:Key="NaviItemTemplate">
-                        <Button Content="{Binding DisplayMember}"
-                                Command="{Binding OpenDetailViewCommand}"
-                                FontSize="24"
-                                Margin="10 0 0 2">
-                            <Button.Template>
-                                <ControlTemplate TargetType="Button">
+                        <Border BorderThickness="1" BorderBrush="#3f3f3f">
+                            <Button Content="{Binding DisplayMember}"
+                                    Command="{Binding OpenDetailViewCommand}"
+                                    FontSize="24"
+                                    Margin="10 0 10 2">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
 
-                                    <Grid x:Name="grid">
-                                        <ContentPresenter />
-                                    </Grid>
+                                        <Grid x:Name="grid">
+                                            <ContentPresenter />
+                                        </Grid>
 
-                                    <!-- Mouse responses -->
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Cursor" Value="Hand" />
-                                            <Setter Property="FontWeight" Value="SemiBold" />
-                                            <Setter Property="Foreground" Value="#548e19" />
-                                        </Trigger>
-                                        <Trigger Property="IsPressed" Value="True">
-                                            <Setter Property="FontWeight" Value="Normal" />
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Button.Template>
-                        </Button>
+                                        <!-- Mouse responses -->
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Cursor" Value="Hand" />
+                                                <Setter Property="Foreground" Value="#548e19" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </Border>
+                        
                     </DataTemplate>
 
                     <DataTemplate x:Key="OrderAddedVehicleTemplate">
@@ -112,6 +111,7 @@
                     <Style TargetType="xctk:DateTimePicker">
                         <Setter Property="Foreground" Value="White" />
                         <Setter Property="Margin" Value="10 10 10 10" />
+                        <Setter Property="FontSize" Value="20" />
                     </Style>
 
                     <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">

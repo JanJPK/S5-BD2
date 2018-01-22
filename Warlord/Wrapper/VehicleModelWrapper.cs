@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Warlord.Model;
 
-namespace Warlord.Wrappers
+namespace Warlord.Wrapper
 {
     public class VehicleModelWrapper : BaseWrapper<VehicleModel>
     {
@@ -81,7 +81,7 @@ namespace Warlord.Wrappers
             {
                 case nameof(Crew):
                 {
-                    if (Crew <= 0)
+                    if (Crew < 1)
                     {
                         yield return "There must be at least one crew member.";
                     }
@@ -90,7 +90,7 @@ namespace Warlord.Wrappers
 
                 case nameof(EnginePower):
                 {
-                    if (EnginePower <= 0)
+                    if (EnginePower < 1)
                     {
                         yield return "Engine cannot have zero or negative horsepower.";
                     }

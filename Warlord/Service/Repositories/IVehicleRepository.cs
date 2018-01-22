@@ -10,6 +10,8 @@ namespace Warlord.Service.Repositories
 
         Task<IEnumerable<Vehicle>> GetAllByOrderAsync(int id);
 
+        Task ReloadByOrderIdAsync(int id);
+
         Task<bool> HasOrderAsync(int id);
 
         #endregion

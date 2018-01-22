@@ -1,6 +1,6 @@
 ﻿using Warlord.Model;
 
-namespace Warlord.Wrappers
+namespace Warlord.Wrapper
 {
     public class CustomerWrapper : BaseWrapper<Customer>
     {

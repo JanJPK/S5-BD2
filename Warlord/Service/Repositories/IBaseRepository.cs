@@ -13,6 +13,7 @@ namespace Warlord.Service.Repositories
         bool HasChanges();
         void Remove(T model);
         Task SaveAsync();
+        Task ReloadAsync(int id);
 
         #endregion
     }

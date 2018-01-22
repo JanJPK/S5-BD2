@@ -197,7 +197,8 @@ namespace Warlord.DataAccess.Migrations
                         Condition = "Perfect condition; fully renovated and displayed in museum.",
                         DateOfManufacture = new DateTime(1980, 11, 20),
                         Price = 100000,
-                        OrderId = 1
+                        OrderId = 1,
+                        Imagepath = "C:\\Warlord.Images\\T_72_1.jpg"
                     },
                     new Vehicle
                     {

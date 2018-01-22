@@ -32,6 +32,16 @@ namespace Warlord.Service.Repositories
                 .SingleAsync(v => v.Id == id);
         }
 
+        public override async Task ReloadAsync(int id)
+        {
+            var dbEntityEntry = Context.ChangeTracker.Entries<VehicleModel>()
+                .SingleOrDefault(db => db.Entity.Id == id);
+            if (dbEntityEntry != null)
+            {
+                await dbEntityEntry.ReloadAsync();
+            }
+        }
+
         public async Task<bool> HasVehiclesAsync(int id)
         {
             return await Context.Vehicles.AsNoTracking()

@@ -53,7 +53,7 @@ namespace Warlord.ViewModel.Detail.Browse
 
         #region Event-related
 
-        protected override void AfterDetailDeleted(AfterDetailDeletedEventArgs args)
+        protected override void AfterDetailDeleted(AfterDetailViewDeletedEventArgs args)
         {
             if (args.ViewModelName == nameof(CustomerDetailVM))
             {
@@ -61,7 +61,7 @@ namespace Warlord.ViewModel.Detail.Browse
             }
         }
 
-        protected override void AfterDetailSaved(AfterDetailSavedEventArgs args)
+        protected override void AfterDetailSaved(AfterDetailViewSavedEventArgs args)
         {
             if (args.ViewModelName == nameof(CustomerDetailVM))
             {

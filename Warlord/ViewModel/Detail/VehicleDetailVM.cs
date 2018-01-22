@@ -5,11 +5,12 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Prism.Commands;
 using Prism.Events;
+using Warlord.Event;
 using Warlord.Model;
 using Warlord.Service;
 using Warlord.Service.Message;
 using Warlord.Service.Repositories;
-using Warlord.Wrappers;
+using Warlord.Wrapper;
 
 namespace Warlord.ViewModel.Detail
 {
@@ -36,6 +37,7 @@ namespace Warlord.ViewModel.Detail
         {
             this.vehicleRepository = vehicleRepository;
             this.vehicleModelRepository = vehicleModelRepository;
+            EventAggregator.GetEvent<AfterDetailViewSavedEvent>().Subscribe(AfterDetailViewSaved);
         }
 
         #endregion
@@ -97,11 +99,59 @@ namespace Warlord.ViewModel.Detail
 
         #region Methods
 
-        private void AfterSaveAction()
+        protected override async void OnDeleteExecute()
+        {
+            if (await vehicleRepository.HasOrderAsync(Vehicle.Id))
+            {
+                await MessageService.ShowInfoDialog(
+                    $"An order includes {Title} and therefore this entity cannot be deleted.");
+                return;
+            }
+
+            bool result = await MessageService.ShowConfirmDialog(
+                $"Do you wish to delete the vehicle {Title}?");
+            if (result)
+            {
+                vehicleRepository.Remove(Vehicle.Model);
+                await vehicleRepository.SaveAsync();
+                RaiseDetailViewDeletedEvent(Vehicle.Id);
+            }
+        }
+
+        protected override bool OnSaveCanExecute()
+        {
+            return Vehicle != null
+                   && Vehicle.Model.Order == null
+                   && !Vehicle.HasErrors
+                   && HasChanges;
+        }
+
+        protected override async void OnSaveExecute()
+        {
+            await SaveWithOptimisticConcurrencyAsync(vehicleRepository.SaveAsync);
+        }
+
+        private async void AfterDetailViewSaved(AfterDetailViewSavedEventArgs args)
+        {
+            if (args.Id == Id && args.ViewModelName == nameof(VehicleDetailVM))
+            {
+                await vehicleRepository.ReloadAsync(Id);
+                await LoadAsync(Id);
+            }
+
+            if (args.Id == VehicleModelId && args.ViewModelName == nameof(VehicleModelDetailVM))
+            {
+                await vehicleModelRepository.ReloadAsync(VehicleModelId);
+                await LoadAsync(Id);
+            }
+        }
+
+        protected override async void AfterSaveAction()
         {
             HasChanges = vehicleRepository.HasChanges();
             Id = vehicle.Id;
-            RaiseDetailSavedEvent(Vehicle.Id, $"{Title}");
+            await LoadAsync(Id);
+            RaiseDetailViewSavedEvent(Vehicle.Id, Title);
         }
 
         private Vehicle CreateNewVehicle()
@@ -126,14 +176,16 @@ namespace Warlord.ViewModel.Detail
                     ((DelegateCommand) SaveCommand).RaiseCanExecuteChanged();
                 }
 
-                //if (e.PropertyName == nameof(Vehicle.ShortName))
-                //{
-                //    SetTitle();
-                //}
+                if (e.PropertyName == nameof(Vehicle.Price))
+                {
+                    SetTitle();
+                }
             };
 
             if (Vehicle.Id == 0)
             {
+                Vehicle.Color = "";
+                Vehicle.Condition = "";
             }
 
             SetTitle();
@@ -141,15 +193,15 @@ namespace Warlord.ViewModel.Detail
 
         private void InitializeVehicleModel(VehicleModel model)
         {
-            vehicleModel = new VehicleModelWrapper(model);
+            VehicleModel = new VehicleModelWrapper(model);
         }
 
         private async Task LoadImage()
         {
-            if (!string.IsNullOrEmpty(Vehicle.Filename)
-                && File.Exists(Vehicle.Filename))
+            if (!string.IsNullOrEmpty(Vehicle.Imagepath)
+                && File.Exists(Vehicle.Imagepath))
             {
-                Uri uri = new Uri(Vehicle.Filename);
+                Uri uri = new Uri(Vehicle.Imagepath);
                 BitmapImage bitmapImage = new BitmapImage();
 
                 bitmapImage.BeginInit();
@@ -162,7 +214,7 @@ namespace Warlord.ViewModel.Detail
             else
             {
                 await MessageService.ShowInfoDialog("Error during image loading. Default image loaded instead.");
-                Image = new BitmapImage(new Uri("pack://application:,,,/Resources/warlord_logo_light.png"));
+                //Image = new BitmapImage(new Uri("pack://application:,,,/Resources/warlord_logo_light.png"));
             }
         }
 
@@ -176,43 +228,6 @@ namespace Warlord.ViewModel.Detail
         private void SetTitle()
         {
             Title = $"{VehicleModel.Name} {Vehicle.Price}€";
-        }
-
-        #endregion
-
-        #region Event-related
-
-        protected override async void OnDeleteExecute()
-        {
-            if (await vehicleRepository.HasOrderAsync(Vehicle.Id))
-            {
-                await MessageService.ShowInfoDialog(
-                    $"An order includes {Title} and therefore this entity cannot be deleted.");
-                return;
-            }
-
-            bool result = await MessageService.ShowConfirmDialog(
-                $"Do you wish to delete the vehicle {Title}?");
-            if (result)
-            {
-                vehicleRepository.Remove(Vehicle.Model);
-                await vehicleRepository.SaveAsync();
-                RaiseDetailDeletedEvent(Vehicle.Id);
-            }
-        }
-
-        protected override bool OnSaveCanExecute()
-        {
-            return Vehicle != null
-                   && Vehicle.Model.Order == null
-                   && !Vehicle.HasErrors
-                   && HasChanges;
-        }
-
-        protected override async void OnSaveExecute()
-        {
-            await SaveWithOptimisticConcurrencyAsync(vehicleRepository.SaveAsync);
-            AfterSaveAction();
         }
 
         #endregion

@@ -79,6 +79,14 @@
     <Compile Include="Migrations\201801132311386_ChangedOrderTotalPriceToInt.Designer.cs">
       <DependentUpon>201801132311386_ChangedOrderTotalPriceToInt.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201801151944575_ChangedFilenameToImagepathInVehicle.cs" />
+    <Compile Include="Migrations\201801151944575_ChangedFilenameToImagepathInVehicle.Designer.cs">
+      <DependentUpon>201801151944575_ChangedFilenameToImagepathInVehicle.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201801160324037_MinorLengthFixes.cs" />
+    <Compile Include="Migrations\201801160324037_MinorLengthFixes.Designer.cs">
+      <DependentUpon>201801160324037_MinorLengthFixes.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WarlordDbContext.cs" />
@@ -117,6 +125,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201801132311386_ChangedOrderTotalPriceToInt.resx">
       <DependentUpon>201801132311386_ChangedOrderTotalPriceToInt.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801151944575_ChangedFilenameToImagepathInVehicle.resx">
+      <DependentUpon>201801151944575_ChangedFilenameToImagepathInVehicle.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801160324037_MinorLengthFixes.resx">
+      <DependentUpon>201801160324037_MinorLengthFixes.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

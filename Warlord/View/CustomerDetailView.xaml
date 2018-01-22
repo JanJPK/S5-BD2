@@ -43,8 +43,9 @@
                 <Label Grid.Row="0" Grid.Column="0"
                        Content="Customer ID" />
                 <TextBox Grid.Row="0" Grid.Column="1"
+                         IsReadOnly="True"
                          Text="{Binding Customer.Id, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
-                         IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}" />
+                         IsEnabled="{Binding UserPrivilege.LoggedIn, UpdateSourceTrigger=PropertyChanged}"/>
 
                 <Label Grid.Row="1" Grid.Column="0"
                        Content="Name" />
@@ -100,7 +101,7 @@
                             Command="{Binding CreateNewOrderCommand}"
                             Visibility="{Binding UserPrivilege.LoggedIn, Converter={StaticResource BooleanToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}" />
                     <Button Content="Find orders" Width="150"
-                            Command="{Binding FindOrdersCommand}"
+                            Command="{Binding OpenBrowseViewWithChildrenCommand}"
                             Visibility="{Binding UserPrivilege.LoggedIn, Converter={StaticResource BooleanToVisibilityConverter}, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
             </GroupBox>

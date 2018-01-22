@@ -5,11 +5,11 @@ namespace Warlord.Event
     /// <summary>
     ///     Published when entity is deleted using view.
     /// </summary>
-    public class AfterDetailDeletedEvent : PubSubEvent<AfterDetailDeletedEventArgs>
+    public class AfterDetailViewDeletedEvent : PubSubEvent<AfterDetailViewDeletedEventArgs>
     {
     }
 
-    public class AfterDetailDeletedEventArgs
+    public class AfterDetailViewDeletedEventArgs
     {
         #region Public Properties
 

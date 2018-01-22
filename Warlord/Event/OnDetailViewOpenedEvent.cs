@@ -5,11 +5,11 @@ namespace Warlord.Event
     /// <summary>
     ///     Published when new detail view is opened.
     /// </summary>
-    public class AfterDetailOpenedEvent : PubSubEvent<AfterDetailOpenedEventArgs>
+    public class OnDetailViewOpenedEvent : PubSubEvent<OnDetailViewOpenedEventArgs>
     {
     }
 
-    public class AfterDetailOpenedEventArgs
+    public class OnDetailViewOpenedEventArgs
     {
         public int Id { get; set; }
         public string ViewModelName { get; set; }

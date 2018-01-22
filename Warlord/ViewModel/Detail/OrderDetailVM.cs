@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -12,7 +13,7 @@ using Warlord.Service.Lookups;
 using Warlord.Service.Message;
 using Warlord.Service.Repositories;
 using Warlord.ViewModel.Detail.Browse;
-using Warlord.Wrappers;
+using Warlord.Wrapper;
 
 namespace Warlord.ViewModel.Detail
 {
@@ -21,17 +22,16 @@ namespace Warlord.ViewModel.Detail
         #region Fields
 
         private readonly ICustomerRepository customerRepository;
-
         private readonly IOrderRepository orderRepository;
+
         private readonly IVehicleLookupService vehicleLookupService;
         private readonly IVehicleRepository vehicleRepository;
-        private CustomerWrapper customer;
 
+        private CustomerWrapper customer;
         private OrderWrapper order;
 
         private BrowseItem selectedVehicleBrowseItem;
         private ObservableCollection<BrowseItem> vehicleBrowseItems;
-
         private int vehicleToAddId;
 
         #endregion
@@ -49,8 +49,9 @@ namespace Warlord.ViewModel.Detail
             this.vehicleLookupService = vehicleLookupService;
             this.vehicleRepository = vehicleRepository;
 
-            VehicleBrowseItems = new ObservableCollection<BrowseItem>();
+            EventAggregator.GetEvent<AfterDetailViewSavedEvent>().Subscribe(AfterDetailViewSaved);
 
+            VehicleBrowseItems = new ObservableCollection<BrowseItem>();
             AddVehicleCommand = new DelegateCommand(OnAddVehicleExecute);
             RemoveVehicleCommand = new DelegateCommand(OnRemoveVehicleExecute, OnRemoveVehicleCanExecute);
         }
@@ -137,21 +138,122 @@ namespace Warlord.ViewModel.Detail
 
         #region Methods
 
-        private async void AfterDetailSaved(AfterDetailSavedEventArgs args)
+        protected override async void AfterSaveAction()
         {
-            if (args.ViewModelName == nameof(CustomerDetailVM))
+            HasChanges = orderRepository.HasChanges();
+            Id = order.Id;
+            await LoadAsync(Id);
+            RaiseDetailViewSavedEvent(Order.Id, Title);
+        }
+
+        protected override async void OnDeleteExecute()
+        {
+            if (await orderRepository.HasVehiclesAsync(Order.Id))
             {
-                InitializeCustomer(await LoadCustomer(CustomerId));
-                SetTitle();
+                await MessageService.ShowInfoDialog(
+                    $"Order {Title} includes vehicles and therefore this entity cannot be deleted.");
+                return;
+            }
+
+            bool result = await MessageService.ShowConfirmDialog(
+                $"Do you wish to delete the order {Title}?");
+            if (result)
+            {        
+                orderRepository.Remove(Order.Model);
+                try
+                {
+                    await orderRepository.SaveAsync();
+                }
+                catch (DbUpdateConcurrencyException ex)
+                {
+                    throw;
+                }
+                
+                RaiseDetailViewDeletedEvent(Order.Id);
             }
         }
 
-        private void AfterSaveAction()
+        protected override bool OnSaveCanExecute()
         {
-            SetTitle();
-            HasChanges = orderRepository.HasChanges();
-            Id = Order.Id;
-            RaiseDetailSavedEvent(Order.Id, Title);
+            return Order != null
+                   && !Order.HasErrors
+                   && HasChanges;
+        }
+
+        protected override async void OnSaveExecute()
+        {
+            //await SaveWithOptimisticConcurrencyOrderAsync();
+            await orderRepository.SaveAsync();
+            await vehicleRepository.SaveAsync();
+            AfterSaveAction();
+        }
+
+        protected async Task SaveWithOptimisticConcurrencyOrderAsync()
+        {
+            try
+            {
+                // Saving vehicles because they contain the FK.
+                await vehicleRepository.SaveAsync();
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                var databaseValues = ex.Entries.Single().GetDatabaseValues();
+                if (databaseValues == null)
+                {
+                    await MessageService.ShowInfoDialog(
+                        "The entity has been deleted by another user. Reverting changes.");
+                    RaiseDetailViewDeletedEvent(Id);
+                }
+                else
+                {
+                    await MessageService.ShowInfoDialog(
+                        "The entity has been changed in the meantime by another user. Reverting changes.");
+                    await ex.Entries.Single().ReloadAsync();
+                }
+                await orderRepository.ReloadAsync(Id);
+                await LoadAsync(Id);
+                return;
+            }
+
+            // Saving vehicles succeeded; update all the vehicle VMs that are currently loaded - some will be removed after order reload.
+            foreach (var vehicle in Order.Model.Vehicles)
+            {
+                EventAggregator.GetEvent<AfterDetailViewSavedEvent>()
+                    .Publish(new AfterDetailViewSavedEventArgs
+                    {
+                        Id = vehicle.Id,
+                        ViewModelName = nameof(VehicleDetailVM)
+                    });
+            }
+
+            // Save order.            
+            try
+            {
+                await orderRepository.SaveAsync();
+                await orderRepository.ReloadAsync(Id);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                var entry = ex.Entries.Single();
+                throw;
+            }
+
+            AfterSaveAction();
+        }
+
+        private async void AfterDetailViewSaved(AfterDetailViewSavedEventArgs args)
+        {
+            if (args.Id == CustomerId && args.ViewModelName == nameof(CustomerDetailVM))
+            {
+                await customerRepository.ReloadAsync(CustomerId);
+                await LoadAsync(Id);
+            }
+            if (args.ViewModelName == nameof(VehicleDetailVM))
+            {
+                var browseItem = vehicleBrowseItems.SingleOrDefault(l => l.Id == args.Id);
+                if (browseItem != null)
+                    browseItem.DisplayMember = args.DisplayMember;
+            }
         }
 
         private Order CreateNewOrder()
@@ -185,14 +287,15 @@ namespace Warlord.ViewModel.Detail
                     ((DelegateCommand) SaveCommand).RaiseCanExecuteChanged();
                 }
 
-                //if (e.PropertyName == nameof(Vehicle.ShortName))
-                //{
-                //    SetTitle();
-                //}
+                if (e.PropertyName == nameof(Order.Date))
+                {
+                    SetTitle();
+                }
             };
 
             if (Order.Id == 0)
             {
+                orderRepository.SaveAsync();
             }
 
             SetTitle();
@@ -226,56 +329,6 @@ namespace Warlord.ViewModel.Detail
             }
         }
 
-        private void SetTitle()
-        {
-            Title = $"{Order.Id}/{Order.Date.Day}-{Order.Date.Month}-{Order.Date.Year} {Customer.Name}";
-        }
-
-        #endregion
-
-        #region Event-related
-
-        protected override async void OnDeleteExecute()
-        {
-            if (await orderRepository.HasVehiclesAsync(Order.Id))
-            {
-                await MessageService.ShowInfoDialog(
-                    $"Order {Title} includes vehiles and therefore this entity cannot be deleted.");
-                return;
-            }
-
-            bool result = await MessageService.ShowConfirmDialog(
-                $"Do you wish to delete the order {Title}?");
-            if (result)
-            {
-                orderRepository.Remove(Order.Model);
-                await orderRepository.SaveAsync();
-                RaiseDetailDeletedEvent(Order.Id);
-            }
-        }
-
-        protected override bool OnSaveCanExecute()
-        {
-            return Order != null
-                   && !Order.HasErrors
-                   && HasChanges;
-        }
-
-        protected override async void OnSaveExecute()
-        {
-            await SaveWithOptimisticConcurrencyAsync(orderRepository.SaveAsync);
-            await SaveWithOptimisticConcurrencyAsync(vehicleRepository.SaveAsync);
-
-            foreach (var vehicle in VehicleBrowseItems)
-            {
-                // TODO
-                // RaiseDetailSavedEvent(vehicle.Id, vehicle.DisplayMember);
-            }
-
-            AfterSaveAction();
-            await LoadAsync(Order.Id);
-        }
-
         private async void OnAddVehicleExecute()
         {
             var vehicle = await vehicleRepository.GetByIdAsync(VehicleToAddId);
@@ -287,7 +340,7 @@ namespace Warlord.ViewModel.Detail
                     return;
                 }
 
-                if(vehicleBrowseItems.Any(v => v.Id == VehicleToAddId))
+                if (vehicleBrowseItems.Any(v => v.Id == VehicleToAddId))
                 {
                     await MessageService.ShowInfoDialog("Vehicle with given ID is already in this order.");
                     return;
@@ -326,6 +379,11 @@ namespace Warlord.ViewModel.Detail
             HasChanges = orderRepository.HasChanges();
             VehicleBrowseItems.Remove(SelectedVehicleBrowseItem);
             ((DelegateCommand) SaveCommand).RaiseCanExecuteChanged();
+        }
+
+        private void SetTitle()
+        {
+            Title = $"{Order.Id}/{Order.Date.Day}-{Order.Date.Month}-{Order.Date.Year} {Customer.Name}";
         }
 
         #endregion

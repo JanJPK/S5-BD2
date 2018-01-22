@@ -5,7 +5,7 @@ namespace Warlord.Event
     /// <summary>
     ///     Published when view is closed.
     /// </summary>
-    public class AfterDetailClosedEvent : PubSubEvent<AfterDetailClosedEventArgs>
+    public class AfterDetailViewClosedEvent : PubSubEvent<AfterDetailClosedEventArgs>
     {
     }
 
